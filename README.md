@@ -3,7 +3,7 @@ Project 1 for CPSC 449 w/ Prof Avery - Microservices with RESTful APIs
 
 ## Team Members:
 * Ops  - Jeffrey Lo
-* Dev1 - Ahhsca
+* Dev1 - Oscar Cheung
 * Dev2 - Mircea Dumitrache
 
 
