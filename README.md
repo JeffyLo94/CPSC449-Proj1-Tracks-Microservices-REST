@@ -24,7 +24,7 @@ Project 1 for CPSC 449 w/ Prof Avery - Microservices with RESTful APIs
 ## Microservice APIs:
 
 ### Tracks
-| Request | Route         | Description                                                                                       |
+| Method | Route         | Description                                                                                       |
 |---------|---------------|---------------------------------------------------------------------------------------------------|
 | POST    | /tracks       | Create new track                                                                                  |
 | GET     | /tracks       | Get all tracks                                                                                    |
@@ -46,6 +46,21 @@ Project 1 for CPSC 449 w/ Prof Avery - Microservices with RESTful APIs
 | DELETE | /playlists?query | Delete the first playlist that matches query parameters |
 
 ### Users
-
+| Method | Route        | Description                                                             |
+|--------|--------------|-------------------------------------------------------------------------|
+| POST   | /user        | Create new user, automatically hash the password when create user       |
+| GET    | /user/?query | Get first user profile that matches query param, except hashed password |
+| GET    | /user/#      | Get user that matches #, excluding hashed pass                          |
+| GET    | /user?query  | Get first user that satisfies query parameters                          |
+| PUT    | /user?query  | Edit the first user that matches query parameters with JSON provided    |
+| PUT    | /user/#      | Edit user that matches #                                                |
+| DELETE | /user/#      | Delete user that matches #                                              |
+| DELETE | /user?query  | Delete the first user that matches query parameters                     |
+| POST   | /user/auth   | Authenticates user w/ supplied username, password                       |
 
 ### Descriptions
+| Method | Route              | Description                                        |
+|--------|--------------------|----------------------------------------------------|
+| POST   | /description       | Create new description                             |
+| GET    | /description/#     | Get the description that matches #                 |
+| GET    | /description?query | Get the first description that matches query param |
