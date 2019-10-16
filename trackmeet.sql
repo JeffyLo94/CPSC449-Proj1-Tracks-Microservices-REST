@@ -21,7 +21,11 @@ CREATE TABLE playlists (
     title VARCHAR,
     urls VARCHAR,
     creator VARCHAR,
-    description VARCHAR
+    description VARCHAR,
     UNIQUE(title, creator)
 );
+<<<<<<< HEAD
 COMMIT;
+=======
+COMMIT;
+>>>>>>> b8ea66b20e98a80429f154050fc5daea5582c4e9
