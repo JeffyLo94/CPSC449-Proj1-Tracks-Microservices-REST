@@ -16,15 +16,12 @@ CREATE TABLE tracks (
     art_url VARCHAR,
     UNIQUE(title, album, artist, songLength, song_url, art_url)
 );
-
-DROP TABLE IF EXISTS playlists;
 CREATE TABLE playlists (
     id INTEGER primary key,
     title VARCHAR,
     urls VARCHAR,
     creator VARCHAR,
-    description VARCHAR
+    description VARCHAR,
     UNIQUE(title, creator)
 );
-
 COMMIT;
