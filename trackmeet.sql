@@ -1,4 +1,4 @@
--- $ sqlite3 tracks.db < sqlite.sql
+-- $ sqlite3 trackmeet.db < sqlite.sql
 
 PRAGMA foreign_keys = ON;
 BEGIN TRANSACTION;

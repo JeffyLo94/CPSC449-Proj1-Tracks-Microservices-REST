@@ -1,4 +1,4 @@
-initDB: cat trackmeet.sql | sqlite3 database.db 
+initDB: sqlite3 trackmeet.sql
 
 Tracks: FLASK_APP=services/tracks.py flask run -p $PORT
 
