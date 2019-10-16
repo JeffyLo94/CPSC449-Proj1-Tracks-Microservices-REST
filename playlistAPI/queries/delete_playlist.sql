@@ -1,3 +1,3 @@
--- :name delete_playlist :insert
-DELETE FROM playlists(title, urls, user, description)
-VALUES(:title, :urls, :user, :description)
+-- :name delete_playlist :delete
+DELETE FROM playlists(title, urls, creator, description)
+VALUES(:title, :urls, :creator, :description)
