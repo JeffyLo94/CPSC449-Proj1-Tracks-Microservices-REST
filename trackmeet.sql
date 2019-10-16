@@ -2,7 +2,10 @@
 
 PRAGMA foreign_keys = ON;
 BEGIN TRANSACTION;
-DROP TABLE IF EXISTS tracks, playlists, users, descriptions;
+DROP TABLE IF EXISTS tracks;
+DROP TABLE IF EXISTS playlists;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS descriptions;
 CREATE TABLE tracks (
     id INTEGER primary key,
     title VARCHAR,
