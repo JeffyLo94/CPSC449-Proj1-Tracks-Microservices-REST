@@ -6,28 +6,30 @@ Project 1 for CPSC 449 w/ Prof Avery - Microservices with RESTful APIs
 * Dev1 - Oscar Cheung
 * Dev2 - Mircea Dumitrache
 
-## Run: 
-* Initialize DB: ```sqlite3 trackmeet.db < trackmeet.sql```
-* Start micro-services: ```foremanstart -f Procfile -e .env```
-* Test Script: 
-
 ## Responsibilities:
 * Ops   owns the Procfile, REST population script, team management, and Tuffix deployment.
 * Dev1  owns the Tracks and Playlists microservices.
 * Dev2  owns the Users and Descriptions microservices.
 
-## Technologies:
+## Requirements & Dependencies:
 * Python 3.6.7
 * Flask API
 * PugSQL
 * Foreman
+* Tavern
+* Pytest
 
 ## Tested on:
 * Tuffix
 
-## Microservice APIs:
 
-### Tracks
+# Running: 
+* Initialize DB: ```foreman run initDB```
+* Start micro-services: ```foreman start -m all=1,initDB=0 -e .env```
+* Run Test Script: ```py.test``` 
+
+# Microservice APIs:
+## Tracks
 | Method | Route         | Description                                                                                       |
 |---------|---------------|---------------------------------------------------------------------------------------------------|
 | POST    | /tracks       | Create new track                                                                                  |
@@ -37,7 +39,7 @@ Project 1 for CPSC 449 w/ Prof Avery - Microservices with RESTful APIs
 | Delete  | /tracks       | Delete all tracks                                                                                 |
 | Delete  | /tracks?query | Delete first track that matches query parameters                                                  |
 
-### Playlists
+## Playlists
 | Method | Route            | Description                                             |
 |--------|------------------|---------------------------------------------------------|
 | POST   | /playlists       | Create new playlist                                     |
@@ -49,7 +51,7 @@ Project 1 for CPSC 449 w/ Prof Avery - Microservices with RESTful APIs
 | DELETE | /playlists/#     | Delete playlist that matches #                          |
 | DELETE | /playlists?query | Delete the first playlist that matches query parameters |
 
-### Users
+## Users
 | Method | Route        | Description                                                             |
 |--------|--------------|-------------------------------------------------------------------------|
 | POST   | /user        | Create new user, automatically hash the password when create user       |
@@ -62,7 +64,7 @@ Project 1 for CPSC 449 w/ Prof Avery - Microservices with RESTful APIs
 | DELETE | /user?query  | Delete the first user that matches query parameters                     |
 | POST   | /user/auth   | Authenticates user w/ supplied username, password                       |
 
-### Descriptions
+## Descriptions
 | Method | Route              | Description                                        |
 |--------|--------------------|----------------------------------------------------|
 | POST   | /description       | Create new description                             |

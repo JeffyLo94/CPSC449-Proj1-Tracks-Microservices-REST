@@ -1,0 +1,17 @@
+test_name: Tracks API Test
+
+stages:
+  - name: Create a track
+    url: http://localhost/tracks
+    method: POST
+    json:
+      title: Dare You To Move
+      album: The Beautiful Letdown
+      artist: Switchfoot
+      length: 247
+      url: http://localhost/files/audio/dare-you-to-move.mp3
+      art-url: http://localhost/files/pics/albums/the-beautiful-letdown.png
+    headers:
+      content-type: application/json
+    response:
+      status_code: 200
