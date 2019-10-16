@@ -24,3 +24,4 @@ CREATE TABLE playlists (
     description VARCHAR,
     UNIQUE(title, creator)
 );
+COMMIT;
