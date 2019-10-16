@@ -1,7 +1,7 @@
-test_name: Tracks API Test
+test_name: Tracks API Test - Track Creation
 
 stages:
-  - name: Create a track
+  - name: Create a track 1
     request:
       url: http://localhost/tracks
       method: POST
@@ -16,3 +16,138 @@ stages:
         content-type: application/json
     response:
       status_code: 200
+
+  - name: Create a track 2
+    request:
+      url: http://localhost/tracks
+      method: POST
+      json:
+        title: Can't Help Falling in Love
+        album: Blue Hawaii
+        artist: Elvis Presley
+        length: 179
+        url: http://localhost/files/audio/cant-help-falling-in-love.mp3
+      headers:
+        content-type: application/json
+    response:
+      status_code: 200
+
+  - name: Create a track 3
+    request:
+      url: http://localhost/tracks
+      method: POST
+      json:
+        title: Seven Nation Army
+        album: Elephant
+        artist: The White Stripes
+        length: 247
+        url: http://localhost/files/audio/seven-nation-army.mp3
+      headers:
+        content-type: application/json
+    response:
+      status_code: 200
+
+  - name: Verify Track Creations
+    request:
+      url: http://localhost/tracks
+      method: GET
+      headers:
+        content-type: application/json
+    response:
+      status_code: 200
+
+---
+
+test_name: Tracks API Test - Track Query
+
+stages:
+  - name: Track Query - title
+    request:
+      url: http://locahost/tracks?title=Dare%20You%20To%20Move
+      method: GET
+      headers:
+        content-type: application/json
+    response:
+      status_code: 200
+
+  - name: Track Query - artist
+    request:
+      url: http://locahost/tracks?artist=Switchfoot
+      method: GET
+      headers:
+        content-type: application/json
+    response:
+      status_code: 200
+
+  - name: Track Query - title and artist
+    request:
+      url: http://locahost/tracks?title=Dare%20You%20To%20Move&artist=Switchfoot
+      method: GET
+      headers:
+        content-type: application/json
+    response:
+      status_code: 200
+
+---
+
+test_name: Tracks API Test - Track Editing
+
+stages:
+  - name: Track edit - change album name
+    request:
+      url: http://locahost/tracks?title=Dare%20You%20To%20Move&artist=Switchfoot
+      method: PUT
+      json:
+        title: Dare You To Move
+        album: The Best Yet
+        artist: Switchfoot
+        length: 247
+        url: http://localhost/files/audio/dare-you-to-move.mp3
+        art-url: http://localhost/files/pics/albums/the-beautiful-letdown.png
+      headers:
+        content-type: application/json
+    response:
+      status_code: 200
+
+  - name: Verifying album name change
+    request:
+      url: http://locahost/tracks?title=Dare%20You%20To%20Move
+      method: GET
+      headers:
+        content-type: application/json
+    response:
+      status_code: 200
+      headers:
+        content-type: application/json
+      body:
+        success:
+          - title: Album name has changed
+            title: Dare You To Move
+            album: The Best Yet
+            artist: Switchfoot
+            length: 247
+            url: http://localhost/files/audio/dare-you-to-move.mp3
+            art-url: http://localhost/files/pics/albums/the-beautiful-letdown.png
+
+---
+
+test_name: Tracks API Test - Track Deletion
+
+stages:
+  - name: Delete Seven Nation Army Track
+    request:
+      url: http://localhost/tracks?title=Seven%20Nation%20Army
+      method: DELETE
+      headers:
+        content-type: application/json
+    response:
+      status_code: 200
+
+  - name: Verify Deletion
+    request:
+      url: http://localhost/tracks?title=Seven%20Nation%20Army
+      method: GET
+      headers:
+        content-type: application/json
+    response:
+      status_code: 404

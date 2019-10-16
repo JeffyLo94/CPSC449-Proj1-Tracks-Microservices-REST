@@ -28,7 +28,7 @@ CREATE TABLE playlists (
     title VARCHAR,
     urls VARCHAR,
     creator VARCHAR,
-    description VARCHAR
+    description VARCHAR,
     UNIQUE(title, creator)
 );
 
