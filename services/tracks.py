@@ -93,7 +93,7 @@ def filter_tracks(query_parameters):
  	if song_url:
  		query += ' song_url=? AND'
  		to_filter.append(song_url)
- 	if art_urlt:
+ 	if art_url:
  		query += ' art_url=? AND'
  		to_filter.append(art_url)
  	if not (id or title or album or artist or songLength or song_url or art_url):
