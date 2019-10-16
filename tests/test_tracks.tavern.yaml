@@ -3,7 +3,7 @@ test_name: Tracks API Test - Track Creation
 stages:
   - name: Create a track 1
     request:
-      url: http://localhost/tracks
+      url: http://localhost:5100/tracks
       method: POST
       json:
         title: Dare You To Move
@@ -19,7 +19,7 @@ stages:
 
   - name: Create a track 2
     request:
-      url: http://localhost/tracks
+      url: http://localhost:5100/tracks
       method: POST
       json:
         title: Can't Help Falling in Love
@@ -34,7 +34,7 @@ stages:
 
   - name: Create a track 3
     request:
-      url: http://localhost/tracks
+      url: http://localhost:5100/tracks
       method: POST
       json:
         title: Seven Nation Army
@@ -63,7 +63,7 @@ test_name: Tracks API Test - Track Query
 stages:
   - name: Track Query - title
     request:
-      url: http://locahost/tracks?title=Dare%20You%20To%20Move
+      url: http://locahost:5100/tracks?title=Dare%20You%20To%20Move
       method: GET
       headers:
         content-type: application/json
@@ -72,7 +72,7 @@ stages:
 
   - name: Track Query - artist
     request:
-      url: http://locahost/tracks?artist=Switchfoot
+      url: http://locahost:5100/tracks?artist=Switchfoot
       method: GET
       headers:
         content-type: application/json
@@ -81,7 +81,7 @@ stages:
 
   - name: Track Query - title and artist
     request:
-      url: http://locahost/tracks?title=Dare%20You%20To%20Move&artist=Switchfoot
+      url: http://locahost:5100/tracks?title=Dare%20You%20To%20Move&artist=Switchfoot
       method: GET
       headers:
         content-type: application/json
@@ -95,7 +95,7 @@ test_name: Tracks API Test - Track Editing
 stages:
   - name: Track edit - change album name
     request:
-      url: http://locahost/tracks?title=Dare%20You%20To%20Move&artist=Switchfoot
+      url: http://locahost:5100/tracks?title=Dare%20You%20To%20Move&artist=Switchfoot
       method: PUT
       json:
         title: Dare You To Move
@@ -111,7 +111,7 @@ stages:
 
   - name: Verifying album name change
     request:
-      url: http://locahost/tracks?title=Dare%20You%20To%20Move
+      url: http://locahost:5100/tracks?title=Dare%20You%20To%20Move
       method: GET
       headers:
         content-type: application/json
@@ -136,7 +136,7 @@ test_name: Tracks API Test - Track Deletion
 stages:
   - name: Delete Seven Nation Army Track
     request:
-      url: http://localhost/tracks?title=Seven%20Nation%20Army
+      url: http://localhost:5100/tracks?title=Seven%20Nation%20Army
       method: DELETE
       headers:
         content-type: application/json
@@ -145,7 +145,7 @@ stages:
 
   - name: Verify Deletion
     request:
-      url: http://localhost/tracks?title=Seven%20Nation%20Army
+      url: http://localhost:5100/tracks?title=Seven%20Nation%20Army
       method: GET
       headers:
         content-type: application/json
