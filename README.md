@@ -6,6 +6,10 @@ Project 1 for CPSC 449 w/ Prof Avery - Microservices with RESTful APIs
 * Dev1 - Oscar Cheung
 * Dev2 - Mircea Dumitrache
 
+## Run: 
+* Initialize DB: ```sqlite3 trackmeet.db < trackmeet.sql```
+* Start micro-services: ```foremanstart -f Procfile -e .env```
+* Test Script: 
 
 ## Responsibilities:
 * Ops   owns the Procfile, REST population script, team management, and Tuffix deployment.
