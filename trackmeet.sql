@@ -30,8 +30,7 @@ CREATE TABLE users (
   password VARCHAR,
   displayname VARCHAR,
   email VARCHAR,
-  url VARCHAR,
-  UNIQUE(username, displayname, email)
+  url VARCHAR
 );
 CREATE TABLE descriptions (
   id INTEGER primary key,
