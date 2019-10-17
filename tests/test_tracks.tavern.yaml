@@ -68,7 +68,7 @@ stages:
 
   - name: Verify Track Creations
     request:
-      url: {protocol:s}://{host:s}:{tracks_port:d}/tracks
+      url: "{protocol:s}://{host:s}:{tracks_port:d}/tracks"
       method: GET
       headers:
         content-type: application/json
