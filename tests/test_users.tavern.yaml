@@ -48,8 +48,7 @@ stages:
         content-type: application/json
     response:
       status_code: 200
-      body:
-        - !anything
+      body: !anything
 
 ---
 
