@@ -24,4 +24,20 @@ CREATE TABLE playlists (
     description VARCHAR,
     UNIQUE(title, creator)
 );
+CREATE TABLE users (
+  id INTEGER primary key,
+  username VARCHAR,
+  password VARCHAR,
+  displayname VARCHAR,
+  email VARCHAR,
+  url VARCHAR,
+  UNIQUE(username, displayname, email)
+);
+CREATE TABLE descriptions (
+  id INTEGER primary key,
+  user VARCHAR.
+  trackurl VARCHAR,
+  description VARCHAR,
+  UNIQUE(user)
+);
 COMMIT;
