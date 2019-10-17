@@ -1,3 +1,3 @@
--- :name del_user_by_id :'OK'
+-- :name del_user_by_id :affected
 DELETE FROM users
-WHERE id = :id
+WHERE id = :id;

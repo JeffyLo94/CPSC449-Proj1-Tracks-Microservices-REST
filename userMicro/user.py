@@ -3,6 +3,7 @@ import flask_api
 from flask import request
 from flask_api import status, exceptions
 import pugsql
+import werkzeug
 
 #   -----   Initialization of the Flask API
 app = flask_api.FlaskAPI(__name__)
@@ -34,13 +35,13 @@ def home():
 <p>A prototype API for distant browsing of music tracks you can't listen to.</p>'''
 
 #   -----   DEBUG only function ?
-@app.route('/user/v1/resources/users/all', methods=['GET'])
+@app.route('/user/all', methods=['GET'])
 def all_users():
     all_users = queries.all_users()
     return list(all_users)
 
 #   -----   DEBUG only function ?
-@app.route('/user/v1/resources/users/<int:id>')
+@app.route('/user/<int:id>')
 def user(id):
     user = queries.user_by_id(id = id)
     if user:
@@ -50,27 +51,56 @@ def user(id):
 
 #   -----   This will be used to get the neccessary users or
 #           create a new user using parameters
-@app.route('/user/v1/resources/users',methods=['GET','POST','DELETE'])
+@app.route('/user',methods=['GET','POST','DELETE'])
 def users():
     if request.method == 'GET':
         return filter_users(request.args)
     elif request.method == 'POST':
         return create_user(request.data)
     elif request.method == 'DELETE':
-        return del_user(request.data.get('id',''))
+        return del_user(request.args)
 
-def del_user(id):
-    queries.del_user_by_id(id=id)
+#   -----   This will be used when deleting a user.
+#           It is called from the /user path
+def del_user(data):
+    id = data.get('id')
+    rows_changed = queries.del_user_by_id(id=id)
+    if(rows_changed == 1):
+        return status.HTTP_200_OK
+    elif(rows_changed > 1): #   If multiple rows with same id, something's wrong
+        return status.HTTP_409_CONFLICT
+    else:
+        raise exceptions.NotFound()
+
+@app.route('/user/chpass',methods=['POST'])
+def change_pass():
+    # info = request.data
+    id = request.data.get('id')
+    password = generate_password_hash(request.data.get('password'))
+    user = queries.change_pass(password = password,id = id)
+    if(user):
+        return status.HTTP_200_OK
+    else:
+        raise exceptions.NotFound()
 
 
-def changer_pass():
-    pass
-
+@app.route('/user/auth',methods=['GET'])
 def Authenticate():
-    pass
+    reqUsername = request.data.get('username')
+    reqPassword = request.data.get('password')
 
-def getIdByName():
-    pass
+    password = queries.get_password_by_username(username = reqUsername)
+    if(!password):
+        raise exceptions.NotFound()
+    if(check_password_hash(reqPassword,password)):
+        return status.HTTP_200_OK
+    else:
+        return status.HTTP_403_FORBIDDEN
+
+#       MAYBE for later
+# @app.route('/user/<string:username>')
+# def getIdByName():
+#     pass
 
 #   -----   Checks for validity and for redundancy
 #           If neither than return the book and say OK
@@ -81,6 +111,7 @@ def create_user(user):
     if not all([field in user for field in required_fields]):
         raise exceptions.ParseError()
     try:
+        user['password'] = generate_password_hash(user['password'])
         user['id'] = queries.create_user(**user)
     except Exception as e:
         return {'error': str(e)}, status.HTTP_409_CONFLICT
