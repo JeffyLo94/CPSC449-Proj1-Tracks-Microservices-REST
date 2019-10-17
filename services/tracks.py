@@ -74,6 +74,8 @@ def delete_track(track):
     try:
         queries.delete_track(**track)
         return { 'message': 'Track successfully deleted'}, status.HTTP_200_OK
+    except Exception as e:
+        return { 'error': str(e) }, status.HTTP_409_CONFLICT
 
 @app.route('/tracks', methods=['DELETE'])
 def delete_all_tracks():
@@ -124,7 +126,7 @@ def filter_tracks(query_parameters):
     if song_url:
         query += ' song_url=? AND'
         to_filter.append(song_url)
-    if art_urlt:
+    if art_url:
         query += ' art_url=? AND'
         to_filter.append(art_url)
     if not (id or title or album or artist or songLength or song_url or art_url):
