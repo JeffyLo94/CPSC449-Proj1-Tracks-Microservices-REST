@@ -38,6 +38,5 @@ CREATE TABLE descriptions (
   user VARCHAR,
   trackurl VARCHAR,
   description VARCHAR,
-  UNIQUE(user)
 );
 COMMIT;
