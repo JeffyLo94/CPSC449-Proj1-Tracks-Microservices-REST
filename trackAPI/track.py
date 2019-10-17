@@ -66,7 +66,7 @@ def delete__by_id(id):
 
 @app.route('/tracks', methods=['POST'])
 def create_track(track):
-    required_fields = ['title', 'album', 'artist', 'songLength', 'song_url', 'art_url']
+    required_fields = ['title', 'album', 'artist', 'songLength', 'song_url']
 
     if not all([field in track for field in required_fields]):
         raise exceptions.ParseError()
