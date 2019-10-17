@@ -40,6 +40,7 @@ def track_by_id(id):
     else:
         raise exceptions.NotFound()
 
+
 @app.route('/tracks', methods=['PUT'])
 def edit_track(query_parameters):
     edit_track = queries.edit_track(request.data)
@@ -53,16 +54,30 @@ def tracks():
     elif request.method == 'POST':
         return create_track(request.data)
     elif request.method == 'DELETE':
-        return delete_by_id(request.data)
+        return delete_track(request.data)
 
 
 @app.route('/tracks', methods=['DELETE'])
-def delete__by_id(id):
+def delete_by_id(id):
     if not id:
         return { 'message': 'Need id'}, status.HTTP_409_CONFLICT
     else:
-        queries.delete_track(id=id)
+        queries.delete_by_id(id=id)
         return { 'message': 'Track successfully deleted'}, status.HTTP_200_OK
+
+@app.route('/tracks', methods=['DELETE'])
+def delete_track(track):
+    required_fields = ['title', 'song_url']
+
+    if not all([field in track for field in required_fields]):
+        raise exceptions.ParseError()
+    try:
+        queries.delete_track(**track)
+        return { 'message': 'Track successfully deleted'}, status.HTTP_200_OK
+
+@app.route('/tracks', methods=['DELETE'])
+def delete_all_tracks():
+    delete_all_tracks = queries.delete_all_tracks()
 
 @app.route('/tracks', methods=['POST'])
 def create_track(track):
