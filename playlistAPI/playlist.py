@@ -47,13 +47,27 @@ def playlist_by_id(id):
         raise exceptions.NotFound()
 
 @app.route('/playlists', methods=['DELETE'])
-def delete_playlist(id):
+def delete_by_id(id):
     if not id:
         return { 'message': 'Need id'}, status.HTTP_409_CONFLICT
     else:
         queries.delete_playlist(id=id)
         return { 'message': 'Playlist successfully deleted'}, status.HTTP_200_OK
 
+@app.route('/playlists', methods=['DELETE'])
+def delete_all_playlist():
+    delete_all_playlist = queries.delete_all_playlist()
+
+@app.route('playlists', methods=['DELETE'])
+def delete_playlist(playlist):
+    required_fields = ['title', 'creator']
+
+    if not all([field in playlist for field in required_fields]):
+        raise exceptions.ParseError()
+    try:
+        delete_playlist(**playlist)
+    except Exception as e:
+        return { 'error': str(e) }, status.HTTP_409_CONFLICT
 
 @app.route('/playlists', methods=['GET', 'POST', 'DELETE'])
 def playlists():
