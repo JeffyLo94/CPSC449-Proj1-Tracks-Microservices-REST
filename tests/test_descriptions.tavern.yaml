@@ -6,7 +6,7 @@ includes:
 stages:
   - name: Create a description
     request:
-      url: "{protocol:s}://{host:s}:{descriptions_port:d}/description"
+      url: "{protocol:s}://{host:s}:{descriptions_port:d}/desc"
       method: POST
       json:
         user: jeffylo94
@@ -27,7 +27,7 @@ includes:
 stages:
   - name: retrive descriptions by jeffylo94
     request:
-      url: "{protocol:s}://{host:s}:{descriptions_port:d}/description?user=jeffylo94"
+      url: "{protocol:s}://{host:s}:{descriptions_port:d}/desc?user=jeffylo94"
       method: GET
       headers:
         content-type: application/json

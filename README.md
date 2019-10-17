@@ -67,6 +67,6 @@ Project 1 for CPSC 449 w/ Prof Avery - Microservices with RESTful APIs
 ## Descriptions
 | Method | Route              | Description                                        |
 |--------|--------------------|----------------------------------------------------|
-| POST   | /description       | Create new description                             |
-| GET    | /description/#     | Get the description that matches #                 |
-| GET    | /description?query | Get the first description that matches query param |
+| POST   | /desc       | Create new description                             |
+| GET    | /desc/#     | Get the description that matches #                 |
+| GET    | /desc?query | Get the first description that matches query param |
