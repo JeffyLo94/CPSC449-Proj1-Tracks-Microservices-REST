@@ -37,6 +37,6 @@ CREATE TABLE descriptions (
   id INTEGER primary key,
   user VARCHAR,
   trackurl VARCHAR,
-  description VARCHAR,
+  description VARCHAR
 );
 COMMIT;
