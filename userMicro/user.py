@@ -76,7 +76,7 @@ def del_user(data):
 def change_pass():
     # info = request.data
     id = request.data.get('id')
-    password = generate_password_hash(request.data.get('password'))
+    password = werkzeug.generate_password_hash(request.data.get('password'))
     user = queries.change_pass(password = password,id = id)
     if(user):
         return status.HTTP_200_OK
@@ -90,9 +90,9 @@ def Authenticate():
     reqPassword = request.data.get('password')
 
     password = queries.get_password_by_username(username = reqUsername)
-    if(!password):
+    if not password:
         raise exceptions.NotFound()
-    if(check_password_hash(reqPassword,password)):
+    if(werkzeug.check_password_hash(reqPassword,password)):
         return status.HTTP_200_OK
     else:
         return status.HTTP_403_FORBIDDEN
@@ -111,7 +111,7 @@ def create_user(user):
     if not all([field in user for field in required_fields]):
         raise exceptions.ParseError()
     try:
-        user['password'] = generate_password_hash(user['password'])
+        user['password'] = werkzeug.generate_password_hash(user['password'])
         user['id'] = queries.create_user(**user)
     except Exception as e:
         return {'error': str(e)}, status.HTTP_409_CONFLICT
