@@ -40,6 +40,11 @@ def track_by_id(id):
     else:
         raise exceptions.NotFound()
 
+@app.route('/tracks', methods=['PUT'])
+def edit_track(query_parameters):
+    edit_track = queries.edit_track(request.data)
+    return list(edit_track), status.HTTP_200_OK
+
 
 @app.route('/tracks', methods=['GET', 'POST', 'DELETE'])
 def tracks():
@@ -48,11 +53,11 @@ def tracks():
     elif request.method == 'POST':
         return create_track(request.data)
     elif request.method == 'DELETE':
-        return delete_track(request.data)
+        return delete_by_id(request.data)
 
 
 @app.route('/tracks', methods=['DELETE'])
-def delete_track(id):
+def delete__by_id(id):
     if not id:
         return { 'message': 'Need id'}, status.HTTP_409_CONFLICT
     else:
