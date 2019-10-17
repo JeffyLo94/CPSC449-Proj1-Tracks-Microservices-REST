@@ -1,0 +1,181 @@
+test_name: Tracks API Test - Track Creation
+
+includes:
+  - !include includes.yaml
+
+stages:
+  - name: Create a track 1
+    request:
+      url: "{protocol:s}://{host:s}:{tracks_port:d}/tracks"
+      method: POST
+      json:
+        title: Dare You To Move
+        album: The Beautiful Letdown
+        artist: Switchfoot
+        songLength: 247
+        song_url: http://localhost/files/audio/dare-you-to-move.mp3
+        art_url: http://localhost/files/pics/albums/the-beautiful-letdown.png
+      headers:
+        content-type: application/json
+    response:
+      status_code: 201
+
+  - name: Create a track 2
+    request:
+      url: "{protocol:s}://{host:s}:{tracks_port:d}/tracks"
+      method: POST
+      json:
+        title: Mess of Me
+        album: Hello Hurricane
+        artist: Switchfoot
+        songLength: 207
+        song_url: http://localhost/files/audio/mess-of-me.mp3
+        art_url: http://localhost/files/pics/albums/hello-hurricane.png
+      headers:
+        content-type: application/json
+    response:
+      status_code: 201
+
+  - name: Create a track 3
+    request:
+      url: "{protocol:s}://{host:s}:{tracks_port:d}/tracks"
+      method: POST
+      json:
+        title: Can't Help Falling in Love
+        album: Blue Hawaii
+        artist: Elvis Presley
+        songLength: 179
+        song_url: http://localhost/files/audio/cant-help-falling-in-love.mp3
+      headers:
+        content-type: application/json
+    response:
+      status_code: 201
+
+  - name: Create a track 4
+    request:
+      url: "{protocol:s}://{host:s}:{tracks_port:d}/tracks"
+      method: POST
+      json:
+        title: Seven Nation Army
+        album: Elephant
+        artist: The White Stripes
+        songLength: 247
+        song_url: http://localhost/files/audio/seven-nation-army.mp3
+      headers:
+        content-type: application/json
+    response:
+      status_code: 201
+
+  - name: Verify Track Creations
+    request:
+      url: "{protocol:s}://{host:s}:{tracks_port:d}/tracks"
+      method: GET
+      headers:
+        content-type: application/json
+    response:
+      status_code: 200
+
+---
+
+test_name: Tracks API Test - Track Query
+
+includes:
+  - !include includes.yaml
+
+stages:
+  - name: Track Query - title
+    request:
+      url: "{protocol:s}://{host:s}:{tracks_port:d}?title=Dare%20You%20To%20Move"
+      method: GET
+      headers:
+        content-type: application/json
+    response:
+      status_code: 200
+
+  - name: Track Query - artist
+    request:
+      url: "{protocol:s}://{host:s}:{tracks_port:d}/tracks?artist=Switchfoot"
+      method: GET
+      headers:
+        content-type: application/json
+    response:
+      status_code: 200
+
+  - name: Track Query - title and artist
+    request:
+      url: "{protocol:s}://{host:s}:{tracks_port:d}/tracks?title=Dare%20You%20To%20Move&artist=Switchfoot"
+      method: GET
+      headers:
+        content-type: application/json
+    response:
+      status_code: 200
+
+---
+
+test_name: Tracks API Test - Track Editing
+
+includes:
+  - !include includes.yaml
+
+stages:
+  - name: Track edit - change album name
+    request:
+      url: "{protocol:s}://{host:s}:{tracks_port:d}/tracks?title=Dare%20You%20To%20Move&artist=Switchfoot"
+      method: PUT
+      json:
+        title: Dare You To Move
+        album: The Best Yet
+        artist: Switchfoot
+        songLength: 247
+        song_url: http://localhost/files/audio/dare-you-to-move.mp3
+        art_url: http://localhost/files/pics/albums/the-beautiful-letdown.png
+      headers:
+        content-type: application/json
+    response:
+      status_code: 200
+
+  - name: Verifying album name change
+    request:
+      url: "{protocol:s}://{host:s}:{tracks_port:d}/tracks?title=Dare%20You%20To%20Move"
+      method: GET
+      headers:
+        content-type: application/json
+    response:
+      status_code: 200
+      headers:
+        content-type: application/json
+      body:
+        success:
+          - title: Album name has changed
+            title: Dare You To Move
+            album: The Best Yet
+            artist: Switchfoot
+            songLength: 247
+            song_url: http://localhost/files/audio/dare-you-to-move.mp3
+            art_url: http://localhost/files/pics/albums/the-beautiful-letdown.png
+
+---
+
+test_name: Tracks API Test - Track Deletion
+
+includes:
+  - !include includes.yaml
+
+stages:
+  - name: Delete Seven Nation Army Track
+    request:
+      url: "{protocol:s}://{host:s}:{tracks_port:d}/tracks?title=Seven%20Nation%20Army"
+      method: DELETE
+      headers:
+        content-type: application/json
+    response:
+      status_code: 200
+
+  - name: Verify Deletion
+    request:
+      url: "{protocol:s}://{host:s}:{tracks_port:d}/tracks?title=Seven%20Nation%20Army"
+      method: GET
+      headers:
+        content-type: application/json
+    response:
+      status_code: 404

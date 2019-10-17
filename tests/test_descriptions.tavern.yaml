@@ -1,0 +1,35 @@
+test_name: Description API Test - desc Creation
+
+includes:
+  - !include includes.yaml
+
+stages:
+  - name: Create a description
+    request:
+      url: "{protocol:s}://{host:s}:{descriptions_port:d}/description"
+      method: POST
+      json:
+        user: jeffylo94
+        trackurl: "{protocol:s}://{host:s}:{tracks_port:d}/tracks?title=Can't Help Falling in Love&artist=Elvis Presley"
+        description: this song is great
+      headers:
+        content-type: application/json
+    response:
+      status_code: 201
+
+---
+
+test_name: Description API Test - desc retrieval
+
+includes:
+  - !include includes.yaml
+
+stages:
+  - name: retrive descriptions by jeffylo94
+    request:
+      url: "{protocol:s}://{host:s}:{descriptions_port:d}/description?user=jeffylo94"
+      method: GET
+      headers:
+        content-type: application/json
+    response:
+      status_code: 200

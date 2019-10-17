@@ -1,0 +1,126 @@
+test_name: Playlist API Test - Playlist Creation
+
+includes:
+  - !include includes.yaml
+
+stages:
+  - name: Create a playlist
+    request:
+      url: "{protocol:s}://{host:s}:{playlists_port:d}/playlists"
+      method: POST
+      json:
+        title: Switchfoot Songs
+        creator: jeffylo94
+        urls:
+          - "{protocol:s}://{host:s}:{tracks_port:d}/tracks?title=Dare%20You%20To%20Move&artist=Switchfoot"
+          - "{protocol:s}://{host:s}:{tracks_port:d}/tracks?title=Mess%20of%20Me&artist=Switchfoot"
+      headers:
+        content-type: application/json
+    response:
+      status_code: 201
+
+---
+
+test_name: Playlist API Test- Playlist Retrieval
+
+includes:
+  - !include includes.yaml
+
+stages:
+  - name: Get switchfoot playlist
+    request:
+      url: "{protocol:s}://{host:s}:{playlists_port:d}/playlists?title=Switchfoot%20Songs"
+      method: GET
+      headers:
+        content-type: application/json
+    response:
+      status_code: 200
+      body:
+        title: Switchfoot Songs
+        creator: !anything
+        urls: !anything
+
+---
+
+test_name: Playlist API Test- Playlist Deletion
+
+includes:
+  - !include includes.yaml
+
+stages:
+  - name: delete switchfoot playlist
+    request:
+      url: "{protocol:s}://{host:s}:{tracks_port:d}/playlists?title=Switchfoot%20Songs"
+      method: DELETE
+      headers:
+        content-type: application/json
+    response:
+      status_code: 200
+
+---
+
+test_name: Playlist API Test- Playlist List Multiple
+
+includes:
+  - !include includes.yaml
+
+stages:
+  - name: Create a playlist 1
+    request:
+      url: "{protocol:s}://{host:s}:{playlists_port:d}/playlists"
+      method: POST
+      json:
+        title: Switchfoot Best Hits
+        creator: jeffylo94
+        urls:
+          - "{protocol:s}://{host:s}:{tracks_port:d}/tracks?title=Dare%20You%20To%20Move&artist=Switchfoot"
+          - "{protocol:s}://{host:s}:{tracks_port:d}/tracks?title=Mess%20of%20Me&artist=Switchfoot"
+      headers:
+        content-type: application/json
+    response:
+      status_code: 201
+
+  - name: Create a playlist 2
+    request:
+      url: "{protocol:s}://{host:s}:{playlists_port:d}/playlists"
+      method: POST
+      json:
+        title: Elvis Song
+        creator: johnsmith_19
+        urls:
+          - "{protocol:s}://{host:s}:{tracks_port:d}/tracks?title=Can't%20Help%20Falling%20in%20Love"
+      headers:
+        content-type: application/json
+    response:
+      status_code: 201
+
+  - name: List All Playlists
+    request:
+      url: "{protocol:s}://{host:s}:{playlists_port:d}/playlists"
+      method: GET
+      headers:
+        content-type: application/json
+    response:
+      status_code: 200
+
+---
+
+test_name: Playlist API Test- Playlist List by User johnsmith_19
+
+includes:
+  - !include includes.yaml
+  
+stages:
+  - name: List johnsmith_19 Playlists
+    request:
+      url: "{protocol:s}://{host:s}:{playlists_port:d}/playlists?creator=johnsmith_19"
+      method: GET
+      headers:
+        content-type: application/json
+    response:
+      status_code: 200
+      body:
+        title: !anything
+        creator: johnsmith_19
+        urls: !anything
+        description: !anything
