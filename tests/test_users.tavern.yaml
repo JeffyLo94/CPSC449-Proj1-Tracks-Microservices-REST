@@ -1,0 +1,113 @@
+test_name: Users API Test - User Creation
+
+includes:
+  - !include includes.yaml
+
+stages:
+  - name: Create a user
+    request:
+      url: "{protocol:s}://{host:s}:{users_port:d}/user"
+      method: POST
+      json:
+        username: jeffylo94
+        password: ABCDE12345
+        displayname: Jelly Jello
+        email: jelly@csu.fullerton.edu
+      headers:
+        content-type: application/json
+    response:
+      status_code: 201
+
+---
+
+test_name: Users API Test - User Retrieval
+
+includes:
+  - !include includes.yaml
+
+stages:
+  - name: get a user
+    request:
+      url: "{protocol:s}://{host:s}:{users_port:d}/user?username=jeffylo94"
+      method: GET
+      headers:
+        content-type: application/json
+    response:
+      status_code: 201
+      body:
+        username: jeffylo94
+        displayname: Jelly Jello
+        email: jelly@csu.fullerton.edu
+
+---
+
+test_name: Users API Test - User Deletion
+
+includes:
+  - !include includes.yaml
+
+stages:
+  - name: delete a user
+    request:
+      url: "{protocol:s}://{host:s}:{users_port:d}/user?username=jeffylo94"
+      method: DELETE
+      headers:
+        content-type: application/json
+    response:
+      status_code: 200
+
+---
+
+test_name: Users API Test - Password change
+
+includes:
+  - !include includes.yaml
+
+stages:
+  - name: change password
+    request:
+      url: "{protocol:s}://{host:s}:{users_port:d}/user?username=jeffylo94"
+      method: PUT
+      json:
+        username: jeffylo94
+        password: 987654321
+        displayname: Jelly Jello
+        email: jelly@csu.fullerton.edu
+      headers:
+        content-type: application/json
+    response:
+      status_code: 200
+
+---
+
+test_name: Users API Test - User Authentication
+
+includes:
+  - !include includes.yaml
+
+stages:
+  - name: Valid User
+    request:
+      url: "{protocol:s}://{host:s}:{users_port:d}/user/auth"
+      method: POST
+      json:
+        username: jeffylo94
+        password: 987654321
+      headers:
+        content-type: application/json
+    response:
+      status_code: 200
+
+  - name: INVALID User
+    request:
+      url: "{protocol:s}://{host:s}:{users_port:d}/user/auth"
+      method: POST
+      json:
+        username: jeffylo94
+        password: notAPassword
+      headers:
+        content-type: application/json
+    response:
+      status_code: 401
+
+---

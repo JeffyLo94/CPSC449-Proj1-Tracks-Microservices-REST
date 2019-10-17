@@ -26,7 +26,7 @@ Project 1 for CPSC 449 w/ Prof Avery - Microservices with RESTful APIs
 # Running: 
 * Initialize DB: ```foreman run initDB```
 * Start micro-services: ```foreman start -m all=1,initDB=0 -e .env```
-* Run Test Script: ```py.test``` 
+* Run Test Script: ```py.test --tb=short``` 
 
 # Microservice APIs:
 ## Tracks
