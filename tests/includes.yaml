@@ -1,0 +1,8 @@
+variables:
+  protocol: http
+  host: localhost
+  tracks_port: 5100
+  playlists_port: 5200
+  users_port: 5300
+  descriptions_port: 5400
+  
