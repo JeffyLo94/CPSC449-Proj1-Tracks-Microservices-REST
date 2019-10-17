@@ -72,7 +72,7 @@ def del_user(data):
     else:
         raise exceptions.NotFound()
 
-@app.route('/user/chpass',methods=['POST'])
+@app.route('/user/chpass',methods=['PUT'])
 def change_pass():
     # info = request.data
     id = request.data.get('id')
