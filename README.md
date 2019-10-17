@@ -22,6 +22,11 @@ Project 1 for CPSC 449 w/ Prof Avery - Microservices with RESTful APIs
 ## Tested on:
 * Tuffix
 
+# Configuration:
+* Test script ports and host: ```tests/includes.yaml```
+* Database url: ``` api.cfg ```
+* Environment variables: ``` .env ```
+
 
 # Running: 
 * Initialize DB: ```foreman run initDB```
