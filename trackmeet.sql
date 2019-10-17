@@ -35,7 +35,7 @@ CREATE TABLE users (
 );
 CREATE TABLE descriptions (
   id INTEGER primary key,
-  user VARCHAR.
+  user VARCHAR,
   trackurl VARCHAR,
   description VARCHAR,
   UNIQUE(user)
