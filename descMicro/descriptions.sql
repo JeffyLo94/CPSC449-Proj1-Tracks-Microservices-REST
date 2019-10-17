@@ -5,20 +5,19 @@ BEGIN TRANSACTION;
 DROP TABLE IF EXISTS descriptions;
 CREATE TABLE descriptions (
   id INTEGER primary key,
-  user VARCHAR.
+  user VARCHAR,
   trackurl VARCHAR,
-  description VARCHAR,
-  UNIQUE(user)
+  description VARCHAR
 );
-INSERT INTO descriptions(user,trackurl,description) VALUES(,,);
-INSERT INTO descriptions(user,trackurl,description) VALUES(,,);
-INSERT INTO descriptions(user,trackurl,description) VALUES(,,);
-INSERT INTO descriptions(user,trackurl,description) VALUES(,,);
-INSERT INTO descriptions(user,trackurl,description) VALUES(,,);
-INSERT INTO descriptions(user,trackurl,description) VALUES(,,);
-INSERT INTO descriptions(user,trackurl,description) VALUES(,,);
-INSERT INTO descriptions(user,trackurl,description) VALUES(,,);
-INSERT INTO descriptions(user,trackurl,description) VALUES(,,);
+-- INSERT INTO descriptions(user,trackurl,description) VALUES(,,);
+-- INSERT INTO descriptions(user,trackurl,description) VALUES(,,);
+-- INSERT INTO descriptions(user,trackurl,description) VALUES(,,);
+-- INSERT INTO descriptions(user,trackurl,description) VALUES(,,);
+-- INSERT INTO descriptions(user,trackurl,description) VALUES(,,);
+-- INSERT INTO descriptions(user,trackurl,description) VALUES(,,);
+-- INSERT INTO descriptions(user,trackurl,description) VALUES(,,);
+-- INSERT INTO descriptions(user,trackurl,description) VALUES(,,);
+-- INSERT INTO descriptions(user,trackurl,description) VALUES(,,);
 -- INSERT INTO descriptions(user,trackurl,description) VALUES(,,);
 -- INSERT INTO descriptions(user,trackurl,description) VALUES(,,);
 -- INSERT INTO descriptions(user,trackurl,description) VALUES(,,);
