@@ -26,6 +26,20 @@ includes:
   - !include includes.yaml
 
 stages:
+  - name: Create a user
+    request:
+      url: "{protocol:s}://{host:s}:{users_port:d}/user"
+      method: POST
+      json:
+        username: jeffylo94
+        password: ABCDE12345
+        displayname: Jelly Jello
+        email: jelly@csu.fullerton.edu
+      headers:
+        content-type: application/json
+    response:
+      status_code: 201
+
   - name: get a user
     request:
       url: "{protocol:s}://{host:s}:{users_port:d}/user?username=jeffylo94"
@@ -35,10 +49,7 @@ stages:
     response:
       status_code: 200
       body:
-        username: jeffylo94
-        displayname: Jelly Jello
-        email: jelly@csu.fullerton.edu
-        url: !anything
+        - !anything
 
 ---
 
@@ -48,6 +59,20 @@ includes:
   - !include includes.yaml
 
 stages:
+  - name: Create a user
+    request:
+      url: "{protocol:s}://{host:s}:{users_port:d}/user"
+      method: POST
+      json:
+        username: jeffylo94
+        password: ABCDE12345
+        displayname: Jelly Jello
+        email: jelly@csu.fullerton.edu
+      headers:
+        content-type: application/json
+    response:
+      status_code: 201
+
   - name: delete a user
     request:
       url: "{protocol:s}://{host:s}:{users_port:d}/user?username=jeffylo94"
