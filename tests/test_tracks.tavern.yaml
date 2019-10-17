@@ -162,9 +162,24 @@ includes:
   - !include includes.yaml
 
 stages:
+  - name: Create a track
+    request:
+      url: "{protocol:s}://{host:s}:{tracks_port:d}/tracks"
+      method: POST
+      json:
+        title: Seven Nation Army
+        album: Elephant
+        artist: The White Stripes
+        songLength: 247
+        song_url: http://localhost/files/audio/seven-nation-army.mp3
+      headers:
+        content-type: application/json
+    response:
+      status_code: 201
+
   - name: Delete Seven Nation Army Track
     request:
-      url: "{protocol:s}://{host:s}:{tracks_port:d}/tracks?title=Seven%20Nation%20Army"
+      url: "{protocol:s}://{host:s}:{tracks_port:d}/tracks?title=Seven%20Nation%20Army&song_url=http://localhost/files/audio/seven-nation-army.mp3"
       method: DELETE
       headers:
         content-type: application/json
