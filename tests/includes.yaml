@@ -1,3 +1,9 @@
+# includes.yaml
+---
+# Each file should have a name and description
+name: Common test information
+description: test ports and host
+
 variables:
   protocol: http
   host: localhost
