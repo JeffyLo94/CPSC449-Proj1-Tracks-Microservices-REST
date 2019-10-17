@@ -33,11 +33,12 @@ stages:
       headers:
         content-type: application/json
     response:
-      status_code: 201
+      status_code: 200
       body:
         username: jeffylo94
         displayname: Jelly Jello
         email: jelly@csu.fullerton.edu
+        url: !anything
 
 ---
 
