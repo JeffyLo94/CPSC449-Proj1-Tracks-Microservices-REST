@@ -58,7 +58,7 @@ def delete_by_id(id):
 def delete_all_playlist():
     delete_all_playlist = queries.delete_all_playlist()
 
-@app.route('playlists', methods=['DELETE'])
+@app.route('/playlists', methods=['DELETE'])
 def delete_playlist(playlist):
     required_fields = ['title', 'creator']
 
