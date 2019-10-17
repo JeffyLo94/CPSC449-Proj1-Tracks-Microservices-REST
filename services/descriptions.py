@@ -63,7 +63,7 @@ def create_desc(desc):
     desc = request.data
     required_fields = ['user','trackurl','description']
 
-    if not all([field in user for field in required_fields]):
+    if not all([field in desc for field in required_fields]):
         raise exceptions.ParseError()
     try:
         desc['id'] = queries.create_desc(**desc)
