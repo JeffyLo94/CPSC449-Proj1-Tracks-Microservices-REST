@@ -14,7 +14,7 @@ CREATE TABLE tracks (
     songLength INT,
     song_url VARCHAR,
     art_url VARCHAR,
-    UNIQUE(title, album, artist, songLength, song_url, art_url)
+    UNIQUE(title, album, artist, songLength, song_url)
 );
 CREATE TABLE playlists (
     id INTEGER primary key,
