@@ -26,7 +26,7 @@ def home():
     return '''<h1>TRACK MICROSERVICE</h1>
 <p>A prototype API for our tracks microservice.</p>'''
 
-
+#return all tracks
 @app.route('/tracks', methods=['GET'])
 def all_tracks():
     all_tracks = queries.all_tracks()
@@ -74,6 +74,8 @@ def delete_track(track):
     try:
         queries.delete_track(**track)
         return { 'message': 'Track successfully deleted'}, status.HTTP_200_OK
+    except Exception as e:
+        return { 'error': str(e) }, status.HTTP_409_CONFLICT
 
 @app.route('/tracks', methods=['DELETE'])
 def delete_all_tracks():
@@ -130,7 +132,7 @@ def filter_tracks(query_parameters):
     if not (id or title or album or artist or songLength or song_url or art_url):
         raise exceptions.NotFound()
 
-    query = query[:-7] + ';'
+    query = query[:-4] + ';'
 
     results = queries._engine.execute(query, to_filter).fetchall()
 

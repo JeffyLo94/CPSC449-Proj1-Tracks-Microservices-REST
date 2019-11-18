@@ -65,7 +65,7 @@ def delete_playlist(playlist):
     if not all([field in playlist for field in required_fields]):
         raise exceptions.ParseError()
     try:
-        delete_playlist(**playlist)
+        queries.delete_playlist(**playlist)
     except Exception as e:
         return { 'error': str(e) }, status.HTTP_409_CONFLICT
 
@@ -80,7 +80,7 @@ def playlists():
 
 @app.route('/playlists', methods=['POST'])
 def create_playlist(playlist):
-    required_fields = ['title', 'urls', 'creator', 'description']
+    required_fields = ['title', 'urls', 'creator']
 
     if not all([field in playlist for field in required_fields]):
         raise exceptions.ParseError()
@@ -119,7 +119,7 @@ def filter_playlists(query_parameters):
     if not (id or title or urls or creator or description):
         raise exceptions.NotFound()
 
-    query = query[:-5] + ';'
+    query = query[:-4] + ';'
 
     results = queries._engine.execute(query, to_filter).fetchall()
 
