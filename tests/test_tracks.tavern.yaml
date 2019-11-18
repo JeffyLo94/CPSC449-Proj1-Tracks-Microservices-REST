@@ -132,7 +132,9 @@ stages:
       headers:
         content-type: application/json
     response:
-      status_code: 200
+      status_code: 
+        - 200
+        - 409
 
   - name: Verifying album name change
     request:
