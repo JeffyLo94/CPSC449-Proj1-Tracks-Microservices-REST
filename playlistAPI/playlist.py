@@ -27,14 +27,14 @@ def home():
 <p>A prototype API for our playlists microservice.</p>'''
 
 
-@app.route('/playlists', methods=['GET'])
+@app.route('/playlists/all', methods=['GET'])
 def all_playlists():
     all_playlists = queries.all_playlists()
     return list(all_playlists), status.HTTP_200_OK
 
 @app.route('/playlists', methods=['GET'])
-def playlist_by_user(query_parameters):
-    playlist_by_user = queries.playlist_by_user()
+def playlist_by_user():
+    playlist_by_user = queries.playlist_by_user(creator=request.args.get('creator'))
     return list(playlist_by_user), status.HTTP_200_OK
 
 
@@ -46,7 +46,7 @@ def playlist_by_id(id):
     else:
         raise exceptions.NotFound()
 
-@app.route('/playlists', methods=['DELETE'])
+@app.route('/playlists/<int:id>', methods=['DELETE'])
 def delete_by_id(id):
     if not id:
         return { 'message': 'Need id'}, status.HTTP_409_CONFLICT
@@ -54,11 +54,11 @@ def delete_by_id(id):
         queries.delete_playlist(id=id)
         return { 'message': 'Playlist successfully deleted'}, status.HTTP_200_OK
 
-@app.route('/playlists', methods=['DELETE'])
+@app.route('/playlists/all', methods=['DELETE'])
 def delete_all_playlist():
     delete_all_playlist = queries.delete_all_playlist()
 
-@app.route('playlists', methods=['DELETE'])
+
 def delete_playlist(playlist):
     required_fields = ['title', 'creator']
 
@@ -78,7 +78,7 @@ def playlists():
     elif request.method == 'DELETE':
         return delete_playlist(request.data)
 
-@app.route('/playlists', methods=['POST'])
+
 def create_playlist(playlist):
     required_fields = ['title', 'urls', 'creator']
 
@@ -88,7 +88,7 @@ def create_playlist(playlist):
         playlist['id'] = queries.create_playlist(**playlist)
     except Exception as e:
         return { 'error': str(e) }, status.HTTP_409_CONFLICT
-        
+
     return playlist, status.HTTP_201_CREATED
 
 def filter_playlists(query_parameters):
