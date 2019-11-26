@@ -116,10 +116,14 @@ def delete_all_playlist():
     except Exception as e:
         debugPrint('PUGSQL is shit')
         try:
-            delete_all_playlist = queries.delete_all_playlists()
+            query = "DELETE FROM playlists"
+            results = queries._engine.execute(query)
+            # delete_all_playlist = queries.delete_all_playlists()
+            debugPrint('deleted all playlists')
             return { 'message': 'All playlists successfully deleted'}, status.HTTP_200_OK
         except Exception as e:
             if (e == 'This result object does not return rows. It has been closed automatically.'):
+                debugPrint('')
                 return {'message': 'All playlists successfully deleted'}, status.HTTP_200_OK
             else:
                 debugPrint(e)

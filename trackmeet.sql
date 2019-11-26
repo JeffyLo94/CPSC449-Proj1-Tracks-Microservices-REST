@@ -24,6 +24,7 @@ CREATE TABLE playlists (
     creator VARCHAR,
     description VARCHAR,
     UNIQUE(title, creator)
+    FOREIGN KEY(creator) REFERENCES users(username) ON DELETE CASCADE
 );
 CREATE TABLE playlistURLs (
     id INTEGER PRIMARY KEY,
@@ -41,8 +42,9 @@ CREATE TABLE users (
 );
 CREATE TABLE descriptions (
   id INTEGER primary key,
-  user VARCHAR,
+  username VARCHAR,
   trackurl VARCHAR,
-  description VARCHAR
+  description VARCHAR,
+  FOREIGN KEY(trackurl) REFERENCES tracks(song_url) ON DELETE CASCADE
 );
 COMMIT;

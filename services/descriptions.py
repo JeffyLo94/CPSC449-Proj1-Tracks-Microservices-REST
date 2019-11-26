@@ -14,6 +14,10 @@ queries = pugsql.module('queries/')
 #   -----   Connect to the neccessary database
 queries.connect(app.config['DATABASE_URL'])
 
+def debugPrint(data):
+    print(data, file=sys.stderr)
+
+
 #   -----   This creates the init command functionality
 #           for flask in order to compile the Database
 #           using the sql script
@@ -30,8 +34,8 @@ def init_db():
 #           this is the place holder for it.
 @app.route('/', methods=['GET'])
 def home():
-    return '''<h1>Distant Music Archive</h1>
-<p>A prototype API for distant browsing of music tracks you can't listen to.</p>'''
+    return '''<h1>Descriptions Archive</h1>
+<p>A prototype API for descriptions of tracks.</p>'''
 
 #   -----   DEBUG only function ?
 @app.route('/desc/all', methods=['GET'])
@@ -40,7 +44,7 @@ def all_desc():
     return list(all_desc)
 
 #   -----   DEBUG only function ?
-@app.route('/desc/<int:id>')
+@app.route('/desc/<int:id>', methods=['GET'])
 def desc(id):
     desc = queries.desc_by_id(id = id)
     if desc:
@@ -48,20 +52,36 @@ def desc(id):
     else:
         raise exceptions.NotFound()
 
+@app.route('/desc/<int:id>', methods=['DELETE'])
+def delete_desc_by_id(id):
+    desc = queries.desc_by_id(id = id)
+    if desc:
+        debugPrint('attempting to delete id:')
+        debugPrint(id)
+        query = "DELETE FROM descriptions WHERE id=?"
+        params = [id]
+        try:
+            result = queries._engine.execute(query,params)
+            debugPrint('deleted desc of id' + str(id))
+            # debugPrint(list(map(dict,result)))
+            return {'message': 'DELETED description'}, status.HTTP_202_ACCEPTED
+        except Exception as e:
+            return {'error': str(e)}, status.HTTP_409_CONFLICT
+
+
 #   -----   This will be used to get the neccessary users or
 #           create a new user using parameters
-@app.route('/desc',methods=['GET','POST','DELETE'])
+@app.route('/desc',methods=['GET','POST'])
 def descriptions():
     if request.method == 'GET':
         return filter_desc(request.args)
     elif request.method == 'POST':
         return create_desc(request.data)
-    # elif request.method == 'DELETE':  #   DELETE a description (for later)
-    #     return del_desc(request.args)
+
 
 def create_desc(desc):
     desc = request.data
-    required_fields = ['user','trackurl','description']
+    required_fields = ['username','trackurl','description']
 
     if not all([field in desc for field in required_fields]):
         raise exceptions.ParseError()
@@ -74,7 +94,7 @@ def create_desc(desc):
 
 def filter_desc(query_parameters):
     id = query_parameters.get('id')
-    user = query_parameters.get('user')
+    user = query_parameters.get('username')
     trackurl = query_parameters.get('trackurl')
     description = query_parameters.get('description')
 
@@ -85,7 +105,7 @@ def filter_desc(query_parameters):
         query += ' id=? AND'
         to_filter.append(id)
     if user:
-        query += ' user=? AND'
+        query += ' username=? AND'
         to_filter.append(user)
     if trackurl:
         query += ' trackurl=? AND'

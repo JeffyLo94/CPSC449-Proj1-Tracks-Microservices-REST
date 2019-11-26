@@ -31,8 +31,8 @@ def init_db():
 #           this is the place holder for it.
 @app.route('/', methods=['GET'])
 def home():
-    return '''<h1>Distant Music Archive</h1>
-<p>A prototype API for distant browsing of music tracks you can't listen to.</p>'''
+    return '''<h1>TrackMeet Users Archive</h1>
+<p>A prototype API for User objects.</p>'''
 
 #   -----   DEBUG only function ?
 @app.route('/user/all', methods=['GET'])

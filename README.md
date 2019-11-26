@@ -2,9 +2,14 @@
 Project 1 for CPSC 449 w/ Prof Avery - Microservices with RESTful APIs
 
 ## Team Members:
+### PART 1 Positions
 * Ops  - Jeffrey Lo
 * Dev1 - Oscar Cheung
 * Dev2 - Mircea Dumitrache
+### PART 2 Positions
+* Ops - Mircea Dumitrache
+* Dev1 - Oscar Cheung
+* Dev2  - Jeffrey Lo
 
 ## Responsibilities:
 * Ops   owns the Procfile, REST population script, team management, and Tuffix deployment.
