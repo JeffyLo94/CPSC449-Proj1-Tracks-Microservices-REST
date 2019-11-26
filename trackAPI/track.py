@@ -13,13 +13,13 @@ sqlite3.register_converter('GUID', lambda b: uuid.UUID(bytes_le=b))
 sqlite3.register_adapter(uuid.UUID, lambda u: buffer(u.bytes_le))
 
 queries1 = pugsql.module('queries/track1/')
-queries.connect(app.config['DATABASE_URL_1'], detect_types=sqlite3.PARSE_DECLTYPES)
+queries.connect(app.config['DATABASE_URL_1'].format(stuff=sqlite3.PARSE_DECLTYPES)
 
 queries2 = pugsql.module('queries/track2/')
-queries.connect(app.config['DATABASE_URL_2'], detect_types=sqlite3.PARSE_DECLTYPES)
+queries.connect(app.config['DATABASE_URL_2'].format(stuff=sqlite3.PARSE_DECLTYPES)
 
 queries3 = pugsql.module('queries/track3/')
-queries.connect(app.config['DATABASE_URL_3'], detect_types=sqlite3.PARSE_DECLTYPES)
+queries.connect(app.config['DATABASE_URL_3'].format(stuff=sqlite3.PARSE_DECLTYPES)
 
 
 @app.cli.command('init')
@@ -189,7 +189,7 @@ def filter_tracks(query_parameters):
     if art_urlt:
         query += ' art_url=? AND'
         to_filter.append(art_url)
-    if not (id or title or album or artist or songLength or song_url or art_url):
+    if not (id or title or album or artist or songLength or song_url):
         raise exceptions.NotFound()
 
     query = query[:-4] + ';'
