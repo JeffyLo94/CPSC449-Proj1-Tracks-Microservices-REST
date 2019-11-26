@@ -56,6 +56,16 @@ Project 1 for CPSC 449 w/ Prof Avery - Microservices with RESTful APIs
 | DELETE | /playlists/#     | Delete playlist that matches #                          |
 | DELETE | /playlists?query | Delete the first playlist that matches query parameters |
 
+* #### Request Body:
+    ```json
+    {
+        "title": "personal songs",
+        "creator": "user1",
+        "description": "test",
+        "urls": ["somesongURL"]
+    }
+    ```
+
 ## Users
 | Method | Route        | Description                                                             |
 |--------|--------------|-------------------------------------------------------------------------|
