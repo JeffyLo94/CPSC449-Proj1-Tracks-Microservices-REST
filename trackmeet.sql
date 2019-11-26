@@ -1,9 +1,11 @@
 -- $ sqlite3 trackmeet.db < sqlite.sql
 
 PRAGMA foreign_keys = ON;
+
 BEGIN TRANSACTION;
 DROP TABLE IF EXISTS tracks;
 DROP TABLE IF EXISTS playlists;
+DROP TABLE IF EXISTS playlistURLs;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS descriptions;
 CREATE TABLE tracks (
@@ -17,12 +19,17 @@ CREATE TABLE tracks (
     UNIQUE(title, album, artist, songLength, song_url)
 );
 CREATE TABLE playlists (
-    id INTEGER primary key,
+    id INTEGER PRIMARY KEY,
     title VARCHAR,
-    urls VARCHAR,
     creator VARCHAR,
     description VARCHAR,
     UNIQUE(title, creator)
+);
+CREATE TABLE playlistURLs (
+    id INTEGER PRIMARY KEY,
+    url VARCHAR,
+    playlistID INTEGER,
+    FOREIGN KEY(playlistID) REFERENCES playlists(id) ON DELETE CASCADE
 );
 CREATE TABLE users (
   id INTEGER primary key,

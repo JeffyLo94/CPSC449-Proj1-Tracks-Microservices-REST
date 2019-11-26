@@ -2,7 +2,7 @@ import flask_api
 from flask import request
 from flask_api import status, exceptions
 import pugsql
-
+import sys
 
 app = flask_api.FlaskAPI(__name__)
 app.config.from_envvar('APP_CONFIG')
@@ -10,6 +10,8 @@ app.config.from_envvar('APP_CONFIG')
 queries = pugsql.module('queries/')
 queries.connect(app.config['DATABASE_URL'])
 
+def debugPrint(data):
+    print(data, file=sys.stderr)
 
 @app.cli.command('init')
 def init_db():
@@ -30,7 +32,19 @@ def home():
 @app.route('/playlists', methods=['GET'])
 def all_playlists():
     all_playlists = queries.all_playlists()
-    return list(all_playlists), status.HTTP_200_OK
+    pListArr = list(all_playlists)
+    for p in pListArr:
+        # debugPrint(p)
+        id = p['id']
+        try:
+            urls = queries.all_urls_for_playlist(playlistID=id)
+            p['urls'] = list(urls)
+            # debugPrint(p)
+        except Exception as e:
+            return {'error': str(e)}, status.HTTP_409_CONFLICT
+    debugPrint(pListArr)
+
+    return pListArr, status.HTTP_200_OK
 
 @app.route('/playlists', methods=['GET'])
 def playlist_by_user(query_parameters):
@@ -46,17 +60,71 @@ def playlist_by_id(id):
     else:
         raise exceptions.NotFound()
 
-@app.route('/playlists', methods=['DELETE'])
-def delete_by_id(id):
-    if not id:
-        return { 'message': 'Need id'}, status.HTTP_409_CONFLICT
+
+@app.route('/playlists/<int:id>', methods=['DELETE'])
+def delete_playlist_by_id(id):
+    debugPrint(id)
+    playlist = queries.playlist_by_id(id=id)
+    if playlist:
+        debugPrint('attempting delete urls')
+        try:
+            # Query for deletion is deleting from table, but throws an error,
+            # so doing this stupid jank ass exception code to bypass
+            queries.delete_playlist_urls_by_id(id=id)
+
+            debugPrint('attempting delete playlist')
+            queries.delete_playlist_by_id(id=id)
+            return {'message': 'Playlist successfully deleted'}, status.HTTP_200_OK
+        except Exception as e:
+            debugPrint('PUGSQL is shit')
+            debugPrint('attempting delete playlist')
+            try:
+                queries.delete_playlist_by_id(id=id)
+                return {'message': 'Playlist successfully deleted'}, status.HTTP_200_OK
+            except:
+                return {'message': 'Playlist successfully deleted'}, status.HTTP_200_OK
+        # except Exception as e:
+            debugPrint(e)
+            return {'error': str(e)}, status.HTTP_409_CONFLICT
     else:
-        queries.delete_playlist(id=id)
-        return { 'message': 'Playlist successfully deleted'}, status.HTTP_200_OK
+        debugPrint('not found')
+        raise exceptions.NotFound()
+
+# @app.route('/playlists', methods=['DELETE'])
+# def delete_by_id(id):
+#     if not id:
+#         return { 'message': 'Need id'}, status.HTTP_409_CONFLICT
+#     else:
+#         playlist = queries.playlist_by_id(id=id)
+#         if playlist:
+#             try:
+#                 queries.delete_playlist_by_id(id=id)
+#                 return { 'message': 'Playlist successfully deleted'}, status.HTTP_200_OK
+#             except Exception as e:
+#                 if (e == 'This result object does not return rows. It has been closed automatically.'):
+#                     return {'message': 'Playlist successfully deleted'}, status.HTTP_200_OK
+#                 else:
+#                     debugPrint(e)
+#                     return {'error': str(e)}, status.HTTP_409_CONFLICT
+#         else:
+#             raise exceptions.NotFound()
 
 @app.route('/playlists', methods=['DELETE'])
 def delete_all_playlist():
-    delete_all_playlist = queries.delete_all_playlist()
+    try:
+        queries.delete_all_playlist_urls()
+    except Exception as e:
+        debugPrint('PUGSQL is shit')
+        try:
+            delete_all_playlist = queries.delete_all_playlists()
+            return { 'message': 'All playlists successfully deleted'}, status.HTTP_200_OK
+        except Exception as e:
+            if (e == 'This result object does not return rows. It has been closed automatically.'):
+                return {'message': 'All playlists successfully deleted'}, status.HTTP_200_OK
+            else:
+                debugPrint(e)
+                return {'error': str(e)}, status.HTTP_409_CONFLICT
+
 
 @app.route('/playlists', methods=['DELETE'])
 def delete_playlist(playlist):
@@ -86,6 +154,18 @@ def create_playlist(playlist):
         raise exceptions.ParseError()
     try:
         playlist['id'] = queries.create_playlist(**playlist)
+        uList = playlist['urls']
+        id = playlist['id']
+        debugPrint(uList)
+        debugPrint(type(uList))
+        debugPrint(id)
+        for i in range(len(uList)):
+            debugPrint(uList[i])
+            data = {
+                'url': uList[i],
+                'playlistID': id
+            }
+            queries.create_playlists_url_list(data)
     except Exception as e:
         return { 'error': str(e) }, status.HTTP_409_CONFLICT
         
