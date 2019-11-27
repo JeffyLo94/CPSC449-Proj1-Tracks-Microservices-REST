@@ -13,23 +13,35 @@ sqlite3.register_converter('GUID', lambda b: uuid.UUID(bytes_le=b))
 sqlite3.register_adapter(uuid.UUID, lambda u: buffer(u.bytes_le))
 
 queries1 = pugsql.module('queries/track1/')
-queries.connect(app.config['DATABASE_URL_1'].format(stuff=sqlite3.PARSE_DECLTYPES)
+queries1.connect(app.config['DATABASE_URL_1'].format(stuff=sqlite3.PARSE_DECLTYPES))
 
 queries2 = pugsql.module('queries/track2/')
-queries.connect(app.config['DATABASE_URL_2'].format(stuff=sqlite3.PARSE_DECLTYPES)
+queries2.connect(app.config['DATABASE_URL_2'].format(stuff=sqlite3.PARSE_DECLTYPES))
 
 queries3 = pugsql.module('queries/track3/')
-queries.connect(app.config['DATABASE_URL_3'].format(stuff=sqlite3.PARSE_DECLTYPES)
+queries3.connect(app.config['DATABASE_URL_3'].format(stuff=sqlite3.PARSE_DECLTYPES))
 
+def debugPrint(data):
+    print(data, file=sys.stderr)
 
 @app.cli.command('init')
 def init_db():
     with app.app_context():
-        db = queries._engine.raw_connection()
-        db.create_all()
-        with app.open_resource('tracks.sql', mode='r') as f:
-            db.cursor().executescript(f.read())
-        db.commit()
+        db1 = queries1._engine.raw_connection()
+        #db.create_all()
+        with app.open_resource('track1.sql', mode='r') as f1:
+            db1.cursor().executescript(f1.read())
+        db1.commit()
+
+        db2 = queries2._engine.raw_connection()
+        with app.open_resource('track2.sql', mode='r') as f2:
+            db2.cursor().executescript(f2.read())
+        db2.commit()
+
+        db3 = queries3._engine.raw_connection()
+        with app.open_resource('track3.sql', mode='r') as f3:
+            db3.cursor().executescript(f3.read())
+        db3.commit()
 
 
 @app.route('/', methods=['GET'])
@@ -40,9 +52,9 @@ def home():
 #return ALL tracks
 @app.route('/tracks/all', methods=['GET'])
 def all_tracks():
-    all_tracks1 = queries.all_tracks()
-    all_tracks2 = queries.all_tracks()
-    all_tracks3 = queries.all_tracks()
+    all_tracks1 = queries1.all_tracks()
+    all_tracks2 = queries2.all_tracks()
+    all_tracks3 = queries3.all_tracks()
     all_tracks = list(all_tracks1) + list(all_tracks2) + list(all_tracks3)
 
     return list(all_tracks)
@@ -58,7 +70,7 @@ def track_by_id(id):
     elif shardKey == 1:
         track = queries2.track_by_id(id=id)
     elif shardKey == 2:
-        track = queries2.track_by_id(id=id)
+        track = queries3.track_by_id(id=id)
     else:
         raise exceptions.NotFound()
     return track
@@ -75,22 +87,45 @@ def tracks():
     #     return delete_track(request.data)
 
 @app.route('/tracks', methods=['PUT'])
-def edit_track(track):
-    track = request.data
-    required_fields = ['title', 'album', 'artist', 'songLength', 'song_url']
-    if not all([field in track for field in required_fields]):
-        raise exceptions.ParseError()
+def edit_track(query_parameters):
+    title = query_parameters.get('title')
+    album = query_parameters.get('album')
+    artist = query_parameters.get('artist')
+    songLength = query_parameters.get('songLength')
+    song_url = query_parameters.get('song_url')
+    art_url = query_parameters.get('art_url')
 
-    track["id"] = uuid.UUID(track["id"])
-    shardKey = track["id"] % 3
-    if shardKey == 0:
-        queries1.edit_track(**track)
-    if shardKey == 1:
-        queries2.edit_track(**track)
-    if shardKey == 2:
-        queries3.edit_track(**track)
+    query = "SELECT * FROM tracks WHERE"
+    to_edit = []
 
-    return track, status.HTTP_200_OK
+    if title:
+        query += ' title=? AND'
+        to_edit.append(title)
+    if album:
+        query += ' album=? AND'
+        to_edit.append(album)
+    if artist:
+        query += ' artist=? AND'
+        to_edit.append(artist)
+    if songLength:
+        query += ' songLength=? AND'
+        to_edit.append(songLength)
+    if song_url:
+        query += ' song_url=? AND'
+        to_edit.append(song_url)
+    if art_url:
+        query += ' art_url=? AND'
+        to_edit.append(art_url)
+    if not (id or title or album or artist or songLength or song_url):
+        raise exceptions.NotFound()
+
+    query = query[:-4] + ';'
+
+    edit1 = queries1._engine.execute(query, to_edit).fetchall()
+    edit2 = queries2._engine.execute(query, to_edit).fetchall()
+    edit3 = queries3._engine.execute(query, to_edit).fetchall()
+
+    return list(map(dict, edit1)) + list(map(dict, edit2)) + list(map(dict, edit3))
 
 
 #delete track by id
@@ -129,6 +164,7 @@ def delete_all_tracks():
     queries1.delete_all_tracks()
     queries2.delete_all_tracks()
     queries3.delete_all_tracks()
+
 
 
 def create_track(track):
@@ -186,7 +222,7 @@ def filter_tracks(query_parameters):
     if song_url:
         query += ' song_url=? AND'
         to_filter.append(song_url)
-    if art_urlt:
+    if art_url:
         query += ' art_url=? AND'
         to_filter.append(art_url)
     if not (id or title or album or artist or songLength or song_url):
