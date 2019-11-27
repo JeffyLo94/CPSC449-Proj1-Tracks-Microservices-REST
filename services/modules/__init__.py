@@ -1,1 +1,1 @@
-from modules.xspf import *
+from services.modules import *
