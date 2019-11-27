@@ -1,0 +1,15 @@
+Endpoint: http://10.0.2.15:9000  http://127.0.0.1:9000 
+AccessKey: 6GVVNX3LS135M8QFRNFV
+SecretKey: zq+pkQvfxr4Q+72mHjhnVoJSQgUBq1z+qmIs08d3
+
+Use this command to start minIO: ./minio server /data
+
+Open a browser and type the link told when you started minIO (eg:  http://127.0.0.1:9000 )
+
+It may ask you for the access key and secretkey. Copy and paste those.
+
+You can verify if you hava the files and server working by looking up files using links:
+EX: http://localhost:9000/tracks/music-file.mp3
+EX: http://localhost:9000/tracks/Nocturne20.mp3
+
+Server for media files is now set up.
