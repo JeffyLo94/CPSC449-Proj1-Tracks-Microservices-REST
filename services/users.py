@@ -26,6 +26,8 @@ def init_db():
             db.cursor().executescript(f.read())
         db.commit()
 
+def debugPrint(data):
+    print(data, file=sys.stderr)
 #   -----   This will be shown if the webpage is opened at
 #           the host defined by flask. No front-end yet so
 #           this is the place holder for it.
@@ -41,7 +43,13 @@ def all_users():
     return list(all_users)
 
 #   -----   DEBUG only function ?
-@app.route('/user/<int:id>')
+@app.route('/user/<int:id>', methods=['GET','DELETE'])
+def user_by_id(id):
+    if request.method == 'GET':
+        return user(id)
+    elif request.method == 'DELETE':
+        return del_user(id)
+
 def user(id):
     user = queries.user_by_id(id = id)
     if user:
@@ -49,47 +57,70 @@ def user(id):
     else:
         raise exceptions.NotFound()
 
+#   -----   This will be used when deleting a user.
+#           It is called from the /user path
+def del_user(id):
+    # id = data.get('id')
+
+    debugPrint('attempting to delete id:')
+    debugPrint(id)
+
+    rows_changed = queries.del_user_by_id(id=id)
+
+    debugPrint('rows_changed: ')
+    debugPrint(rows_changed)
+
+    if(rows_changed == 1):
+        debugPrint('inside rows_changed == 1 stmt')
+        debugPrint(status.HTTP_200_OK)
+        return str(status.HTTP_200_OK)
+    elif(rows_changed > 1): #   If multiple rows with same id, something's wrong
+        return str(status.HTTP_409_CONFLICT)
+    else:
+        raise exceptions.NotFound()
+
 #   -----   This will be used to get the neccessary users or
 #           create a new user using parameters
-@app.route('/user',methods=['GET','POST','DELETE'])
+@app.route('/user',methods=['GET','POST','PUT'])
 def users():
     if request.method == 'GET':
         return filter_users(request.args)
     elif request.method == 'POST':
         return create_user(request.data)
-    elif request.method == 'DELETE':
-        return del_user(request.args)
+    elif request.method == 'PUT':
+        return change_pass(request.args,request.data)
 
-#   -----   This will be used when deleting a user.
-#           It is called from the /user path
-def del_user(data):
-    id = data.get('id')
-    rows_changed = queries.del_user_by_id(id=id)
-    if(rows_changed == 1):
-        return status.HTTP_200_OK
-    elif(rows_changed > 1): #   If multiple rows with same id, something's wrong
-        return status.HTTP_409_CONFLICT
-    else:
-        raise exceptions.NotFound()
 
-@app.route('/user/chpass',methods=['PUT'])
+
+@app.route('/user/chpass/',methods=['PUT'])
 def change_pass():
-    # info = request.data
-    id = request.data.get('id')
-    password = werkzeug.generate_password_hash(request.data.get('password'))
+    data = request.data
+    id = data['id']
+    user = data['username']
+    passW = data['password']
+    debugPrint('passW: ')
+    debugPrint(passW)
+
+    password = werkzeug.generate_password_hash(str(passW))
     user = queries.change_pass(password = password,id = id)
-    if(user):
-        return status.HTTP_200_OK
+    debugPrint('user in change_pass: ')
+    debugPrint(user)
+    if(user == 1):
+        return str(status.HTTP_200_OK)
+    if(user > 1):
+        return {'message': 'more than one item was affected'}, status.HTTP_409_CONFLICT
     else:
         raise exceptions.NotFound()
 
 
 @app.route('/user/auth',methods=['GET'])
 def Authenticate():
-    reqUsername = request.data.get('username')
-    reqPassword = request.data.get('password')
+    reqUsername = request.args.get('username')
+    reqPassword = request.args.get('password')
 
+    debugPrint('inside authenticate BEFORE getting password')
     password = queries.get_password_by_username(username = reqUsername)
+    debugPrint('inside authenticate after getting password')
     if not password:
         raise exceptions.NotFound()
     if(werkzeug.check_password_hash(reqPassword,password)):
@@ -102,10 +133,13 @@ def Authenticate():
 # def getIdByName():
 #     pass
 
+def get_by_name():
+    pass
+
 #   -----   Checks for validity and for redundancy
 #           If neither than return the book and say OK
 def create_user(user):
-    user = request.data
+    # user = request.data
     required_fields = ['username','password','displayname','email']
 
     if not all([field in user for field in required_fields]):
@@ -116,6 +150,8 @@ def create_user(user):
     except Exception as e:
         return {'error': str(e)}, status.HTTP_409_CONFLICT
 
+    debugPrint('this id of the newly created user: ')
+    debugPrint(user['id'])
     return user, status.HTTP_201_CREATED
 
 #   -----   Filter users
@@ -144,6 +180,8 @@ def filter_users(query_parameters):
     if url:
         query += ' url=? AND'
         to_filter.append(url)
+    # if url is None:
+    #     to_filter.append(None)
     if not (id or username or displayname or email):
         raise exceptions.NotFound()
 

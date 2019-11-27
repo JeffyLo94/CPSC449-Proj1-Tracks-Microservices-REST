@@ -9,7 +9,7 @@ stages:
       url: "{protocol:s}://{host:s}:{users_port:d}/user"
       method: POST
       json:
-        username: jeffylo94
+        username: jeffylo941
         password: ABCDE12345
         displayname: Jelly Jello
         email: jelly@csu.fullerton.edu
@@ -31,7 +31,7 @@ stages:
       url: "{protocol:s}://{host:s}:{users_port:d}/user"
       method: POST
       json:
-        username: jeffylo94
+        username: jeffylo942
         password: ABCDE12345
         displayname: Jelly Jello
         email: jelly@csu.fullerton.edu
@@ -63,7 +63,7 @@ stages:
       url: "{protocol:s}://{host:s}:{users_port:d}/user"
       method: POST
       json:
-        username: jeffylo94
+        username: jeffylo943
         password: ABCDE12345
         displayname: Jelly Jello
         email: jelly@csu.fullerton.edu
@@ -74,7 +74,7 @@ stages:
 
   - name: delete a user
     request:
-      url: "{protocol:s}://{host:s}:{users_port:d}/user?id=0"
+      url: "{protocol:s}://{host:s}:{users_port:d}/user/1"
       method: DELETE
       headers:
         content-type: application/json
@@ -91,10 +91,11 @@ includes:
 stages:
   - name: change password
     request:
-      url: "{protocol:s}://{host:s}:{users_port:d}/user?username=jeffylo94"
+      url: "{protocol:s}://{host:s}:{users_port:d}/user/chpass/"
       method: PUT
       json:
-        username: jeffylo94
+        id: 2
+        username: jeffylo944
         password: 987654321
         displayname: Jelly Jello
         email: jelly@csu.fullerton.edu
@@ -116,7 +117,7 @@ stages:
       url: "{protocol:s}://{host:s}:{users_port:d}/user/auth"
       method: POST
       json:
-        username: jeffylo94
+        username: jeffylo945
         password: 987654321
       headers:
         content-type: application/json
@@ -128,9 +129,9 @@ stages:
       url: "{protocol:s}://{host:s}:{users_port:d}/user/auth"
       method: POST
       json:
-        username: jeffylo94
+        username: jeffylo946
         password: notAPassword
       headers:
         content-type: application/json
     response:
-      status_code: 401
+      status_code: 403
