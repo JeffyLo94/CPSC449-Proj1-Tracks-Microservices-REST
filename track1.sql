@@ -4,7 +4,7 @@ PRAGMA foreign_keys=ON;
 BEGIN TRANSACTION;
 DROP TABLE IF EXISTS tracks;
 CREATE TABLE tracks (
-    id UUID primary key,
+    id GUID primary key,
     title VARCHAR,
     album VARCHAR,
     artist VARCHAR,
