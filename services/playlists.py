@@ -215,8 +215,25 @@ def filter_playlists(query_parameters):
     debugPrint(query)
     try:
         results = queries._engine.execute(query, to_filter).fetchall()
-        debugPrint(results)
+        mapped_results = list(map(dict, results))
+        debugPrint('mapped: ')
+        debugPrint(mapped_results)
+        #Get URLS for playlist
+        newResults = dict()
+        for pd in mapped_results:
+            debugPrint(pd)
+            debugPrint(type(pd))
+            plid = pd.get('id')
+            newResults[pd.get('id')] = pd
+            debugPrint(newResults)
+            debugPrint(newResults[plid])
+            urls = queries.all_urls_for_playlist(playlistID=plid)
+            debugPrint(urls)
+            newResults[plid]['urls'] = list(urls)
+            # debugPrint('p: ')
+            debugPrint(newResults[plid])
     except Exception as e:
+        debugPrint('error: ' + str(e))
         return {'error': str(e)}, status.HTTP_409_CONFLICT
 
-    return list(map(dict, results))
+    return mapped_results

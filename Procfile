@@ -8,4 +8,4 @@ Users: FLASK_APP=services/users.py flask run -p $PORT
 
 Descriptions: FLASK_APP=services/descriptions.py flask run -p $PORT
 
-XSPF: FLASK_APP=services/xspf.py flask run -p $PORT
+XSPF: FLASK_APP=services/xspf_service.py flask run -p $PORT
