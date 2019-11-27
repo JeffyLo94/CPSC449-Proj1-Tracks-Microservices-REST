@@ -73,9 +73,9 @@ def del_user(id):
     if(rows_changed == 1):
         debugPrint('inside rows_changed == 1 stmt')
         debugPrint(status.HTTP_200_OK)
-        return str(status.HTTP_200_OK)
+        return {'message':'User deleted successfully!'}, status.HTTP_200_OK
     elif(rows_changed > 1): #   If multiple rows with same id, something's wrong
-        return str(status.HTTP_409_CONFLICT)
+        return {'message': 'Conflict noticed upon deletion'},status.HTTP_409_CONFLICT
     else:
         raise exceptions.NotFound()
 
@@ -95,14 +95,14 @@ def users():
 @app.route('/user/chpass/',methods=['PUT'])
 def change_pass():
     data = request.data
-    id = data['id']
-    user = data['username']
+    # id = data['id']
+    userN = data['username']
     passW = data['password']
     debugPrint('passW: ')
     debugPrint(passW)
 
     password = werkzeug.generate_password_hash(str(passW))
-    user = queries.change_pass(password = password,id = id)
+    user = queries.change_pass(password = password,username = userN)
     debugPrint('user in change_pass: ')
     debugPrint(user)
     if(user == 1):
@@ -113,20 +113,45 @@ def change_pass():
         raise exceptions.NotFound()
 
 
-@app.route('/user/auth',methods=['GET'])
+@app.route('/user/auth',methods=['POST'])
 def Authenticate():
-    reqUsername = request.args.get('username')
-    reqPassword = request.args.get('password')
+    data = request.data
+    reqUsername = data['username']
+    reqPassword = data['password']
+
+    debugPrint('reqUsername: ')
+    debugPrint(reqUsername)
+
+    debugPrint('reqPassword: ')
+    debugPrint(reqPassword)
 
     debugPrint('inside authenticate BEFORE getting password')
     password = queries.get_password_by_username(username = reqUsername)
     debugPrint('inside authenticate after getting password')
+
+    debugPrint('password: ')
+    debugPrint(password)
+
+    # reqPassword = werkzeug.generate_password_hash(str(reqPassword))
+
+    debugPrint('reqPassword after werkzeug: ')
+    debugPrint(reqPassword)
+
+    # werkzeug.check_password_hash(password,reqPassword)
+
+    debugPrint('after checking outside if stmt')
+    debugPrint(werkzeug.check_password_hash(password,str(reqPassword)))
+
     if not password:
         raise exceptions.NotFound()
-    if(werkzeug.check_password_hash(reqPassword,password)):
-        return status.HTTP_200_OK
-    else:
-        return status.HTTP_403_FORBIDDEN
+    if(werkzeug.check_password_hash(password,str(reqPassword))):
+        debugPrint('we got in!')
+        debugPrint(str(status.HTTP_200_OK))
+        return {'message':'Access granted!'}, status.HTTP_200_OK
+
+    debugPrint('we did not get in!')
+    debugPrint(str(status.HTTP_403_FORBIDDEN))
+    return {'message':'Forbidden access'}, status.HTTP_403_FORBIDDEN
 
 #       MAYBE for later
 # @app.route('/user/<string:username>')
@@ -152,6 +177,7 @@ def create_user(user):
 
     debugPrint('this id of the newly created user: ')
     debugPrint(user['id'])
+    debugPrint(user['password'])
     return user, status.HTTP_201_CREATED
 
 #   -----   Filter users

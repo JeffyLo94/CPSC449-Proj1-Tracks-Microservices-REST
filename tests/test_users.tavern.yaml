@@ -94,8 +94,7 @@ stages:
       url: "{protocol:s}://{host:s}:{users_port:d}/user/chpass/"
       method: PUT
       json:
-        id: 2
-        username: jeffylo944
+        username: jeffylo943
         password: 987654321
         displayname: Jelly Jello
         email: jelly@csu.fullerton.edu
@@ -117,7 +116,7 @@ stages:
       url: "{protocol:s}://{host:s}:{users_port:d}/user/auth"
       method: POST
       json:
-        username: jeffylo945
+        username: jeffylo943
         password: 987654321
       headers:
         content-type: application/json
@@ -129,7 +128,7 @@ stages:
       url: "{protocol:s}://{host:s}:{users_port:d}/user/auth"
       method: POST
       json:
-        username: jeffylo946
+        username: jeffylo943
         password: notAPassword
       headers:
         content-type: application/json
