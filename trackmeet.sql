@@ -9,14 +9,14 @@ DROP TABLE IF EXISTS playlistURLs;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS descriptions;
 CREATE TABLE tracks (
-    id INTEGER primary key,
+    guid GUID primary key,
     title VARCHAR,
     album VARCHAR,
     artist VARCHAR,       
     songLength INT,
     song_url VARCHAR,
     art_url VARCHAR,
-    UNIQUE(title, album, artist, songLength, song_url)
+    UNIQUE(songLength)
 );
 CREATE TABLE playlists (
     id INTEGER PRIMARY KEY,
