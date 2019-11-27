@@ -29,8 +29,9 @@ def home():
 <p>A prototype API for our playlists microservice.</p>'''
 
 
-@app.route('/playlists', methods=['GET'])
+@app.route('/playlists/all', methods=['GET'])
 def all_playlists():
+    debugPrint('GETTING ALL Playlists')
     all_playlists = queries.all_playlists()
     pListArr = list(all_playlists)
     for p in pListArr:
@@ -46,7 +47,7 @@ def all_playlists():
 
     return pListArr, status.HTTP_200_OK
 
-@app.route('/playlists', methods=['GET'])
+@app.route('/playlists/<string:user>', methods=['GET'])
 def playlist_by_user(query_parameters):
     playlist_by_user = queries.playlist_by_user()
     return list(playlist_by_user), status.HTTP_200_OK
@@ -114,7 +115,6 @@ def delete_all_playlist():
     try:
         queries.delete_all_playlist_urls()
     except Exception as e:
-        debugPrint('PUGSQL is shit')
         try:
             query = "DELETE FROM playlists"
             results = queries._engine.execute(query)
@@ -182,29 +182,41 @@ def filter_playlists(query_parameters):
     creator = query_parameters.get('creator')
     description = query_parameters.get('description')
 
+    if not id and not title and not urls and not creator and not description:
+        return all_playlists()
+
+
+    debugPrint('ENTERED FILTER PLAYLISTS')
+    debugPrint(id)
+
     query = "SELECT * FROM playlists WHERE"
-    to_filter = []
+    to_filter = {}
 
     if id:
-        query += ' id=? AND'
-        to_filter.append(id)
+        query += ' id=:id AND'
+        to_filter.update({'id': id})
     if title:
-        query += ' title=? AND'
-        to_filter.append(title)
+        query += ' title=:title AND'
+        to_filter.update({'title': title})
     if urls:
-        query += ' urls=? AND'
-        to_filter.append(urls)
+        query += ' urls=:urls AND'
+        to_filter.update({'urls': urls})
     if creator:
-        query += ' creator=? AND'
-        to_filter.append(creator)
+        query += ' creator=:creator AND'
+        to_filter.update({'creator':creator})
     if description:
-        query += ' description=? AND'
-        to_filter.append(description)
+        query += ' description=:desc AND'
+        to_filter.update({'desc':description})
     if not (id or title or urls or creator or description):
+        debugPrint('not found triggered')
         raise exceptions.NotFound()
 
-    query = query[:-5] + ';'
-
-    results = queries._engine.execute(query, to_filter).fetchall()
+    query = query[:-4] + ';'
+    debugPrint(query)
+    try:
+        results = queries._engine.execute(query, to_filter).fetchall()
+        debugPrint(results)
+    except Exception as e:
+        return {'error': str(e)}, status.HTTP_409_CONFLICT
 
     return list(map(dict, results))

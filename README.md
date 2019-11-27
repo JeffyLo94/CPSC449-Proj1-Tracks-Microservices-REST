@@ -23,6 +23,10 @@ Project 1 for CPSC 449 w/ Prof Avery - Microservices with RESTful APIs
 * Foreman
 * Tavern
 * Pytest
+* KONG
+* MinIO
+* requests
+
 
 ## Tested on:
 * Tuffix
