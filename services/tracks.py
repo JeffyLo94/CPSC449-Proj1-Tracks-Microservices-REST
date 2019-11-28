@@ -58,30 +58,38 @@ def home():
 @app.route('/tracks/all', methods=['GET'])
 def all_tracks():
     query = "SELECT * FROM tracks"
-    all_tracks1 = queries1._engine.execute(query).fetchone()
-    all_tracks2 = queries2._engine.execute(query).fetchone()
-    all_tracks3 = queries3._engine.execute(query).fetchone()
+    all_tracks1 = queries1._engine.execute(query).fetchall()
+    all_tracks2 = queries2._engine.execute(query).fetchall()
+    all_tracks3 = queries3._engine.execute(query).fetchall()
     # all_tracks1 = queries1.all_tracks()
     # all_tracks2 = queries2.all_tracks()
     # all_tracks3 = queries3.all_tracks()
-    all_tracks = list(all_tracks1) + list(all_tracks2) + list(all_tracks3)
+    debugPrint(all_tracks1)
+    debugPrint(all_tracks2)
+    debugPrint(all_tracks3)
+    all_tracks = list(map(dict, all_tracks1)) + list(map(dict, all_tracks2)) + list(map(dict, all_tracks3))
+    debugPrint(list(all_tracks))
     # all_tracks = list(all_tracks1)
-
-    return list(all_tracks)
+    if len(all_tracks) > 0:
+        return all_tracks, status.HTTP_200_OK
+    else:
+        return [], status.HTTP_200_OK
 
 #get track by guid
-@app.route('/tracks/<uuid:guid>', methods=['GET'])
-def track_by_id(guid):
+@app.route('/tracks/<string:guid>', methods=['GET'])
+def track_by_guid(guid):
     #get the shardkey of guid and find in respective database
-    shardKey = int(guid) % 3
+    uidStr = guid
+    id = uuid.UUID(uidStr)
+    shardKey = int(id) % 3
     debugPrint(shardKey)
 
     if shardKey == 0:
-        track = queries1.track_by_id(guid=guid)
+        track = queries1.track_by_guid(guid=uidStr)
     elif shardKey == 1:
-        track = queries2.track_by_id(guid=guid)
+        track = queries2.track_by_guid(guid=uidStr)
     elif shardKey == 2:
-        track = queries3.track_by_id(guid=guid)
+        track = queries3.track_by_guid(guid=uidStr)
     else:
         raise exceptions.NotFound()
     return track
@@ -140,11 +148,13 @@ def edit_track(query_parameters):
     # return list(map(dict, edit1))
 
 #delete track by guid
-@app.route('/tracks/<uuid:guid>', methods=['DELETE'])
+@app.route('/tracks/<string:guid>', methods=['DELETE'])
 def delete_by_guid(guid):
     if not guid:
         return { 'message': 'Need guid'}, status.HTTP_409_CONFLICT
-    shardKey = int(guid) % 3
+    uid = uuid.UUID(guid)
+    shardKey = int(uid) % 3
+    debugPrint(guid)
 
     try:
         if shardKey == 0:
@@ -155,7 +165,10 @@ def delete_by_guid(guid):
             queries3.delete_by_guid(guid=guid)
         return { 'message': 'Track successfully deleted'}, status.HTTP_200_OK
     except Exception as e:
-        return { 'error': str(e) }, status.HTTP_409_CONFLICT
+        if (e == 'This result object does not return rows. It has been closed automatically.'):
+            return {'message': 'Track successfully deleted'}, status.HTTP_200_OK
+        else:
+            return { 'error': str(e) }, status.HTTP_409_CONFLICT
 
 
 def delete_track(track):

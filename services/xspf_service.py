@@ -39,34 +39,49 @@ def home():
     return '''<h1>XSPF MICROSERVICE</h1>
     <p> An API for generating XPSF playlists'''
 
-@app.route('/xspf/generate/<int:id>', methods=['GET'])
+@app.route('/playlist/<int:id>.xspf', methods=['GET'])
 def generate_xspf_by_id(id):
     debugPrint(id)
     pRes = playlist_request(id)
-    debugPrint('type')
+    debugPrint('type:')
     debugPrint(type(pRes.json()))
     jsonlist = pRes.json()
-    json = jsonlist[0]
     x = xspf.Xspf()
-    x.title = json['title']
-    x.identifier = str(json['id'])
-    x.creator = json['creator']
-    x.info = json['description']
-    for t_url in json['urls']:
-        debugPrint(t_url)
-        track_jsonlist = tracks_request(t_url)
-        track_json = track_jsonlist[0]
-        track = xspf.Track()
-        track.title = track_json['title']
-        track.identifier = track_json['guid']
-        track.album = track_json['album']
-        track.duration = track_json['songLength']
-        track.creator = track_json['artist']
-        if(track_json['art_url']):
-            track.image = track_json['art_url']
-        track.location = track_json['song_url']
-        x.add_track(track)
 
+    try:
+        if len(jsonlist) > 0:
+            json = jsonlist[0]
+            x.title = json['title']
+            x.identifier = str(json['id'])
+            x.creator = json['creator']
+            x.info = json['description']
+            for t_url in json['urls']:
+                debugPrint(t_url)
+                track_jsonlist = tracks_request(t_url['url'])
+                debugPrint('track')
+                debugPrint(track_jsonlist)
+                track_json = track_jsonlist[0]
+                debugPrint(track_json)
+                track = xspf.Track()
+                track.title = track_json['title']
+                track.identifier = track_json['guid']
+                track.album = track_json['album']
+                track.duration = str(track_json['songLength'])
+                track.creator = track_json['artist']
+                if(track_json['art_url']):
+                    track.image = track_json['art_url']
+                track.location = track_json['song_url']
+                debugPrint('adding track')
+                x.add_track(track)
+    except Exception as e:
+        debugPrint(e)
+        return {'error': str(e)}, status.HTTP_409_CONFLICT
+
+    try:
+        debugPrint(x.toXml())
+    except Exception as e:
+        debugPrint(e)
+        return {'error': str(e)}, status.HTTP_409_CONFLICT
 
     return x.toXml(), status.HTTP_200_OK
 
@@ -93,9 +108,9 @@ def tracks_request(song_url):
         url = TARGET_URL + TRACKS_EPT
     else:
     # Debug pre-kong url
-        url = 'http://localhost:500/' + TRACKS_EPT
+        url = 'http://localhost:5100/' + TRACKS_EPT
     debugPrint(url)
     r = req.get(url, params=payload)
     debugPrint(r.url)
     debugPrint(r.json())
-    return r
+    return r.json()

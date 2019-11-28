@@ -4,7 +4,7 @@
 BEGIN TRANSACTION;
 DROP TABLE IF EXISTS tracks;
 CREATE TABLE tracks (
-    guid GUID primary key,
+    guid BLOB primary key,
     title VARCHAR,
     album VARCHAR,
     artist VARCHAR,
