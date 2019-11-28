@@ -11,10 +11,15 @@ Project 1 for CPSC 449 w/ Prof Avery - Microservices with RESTful APIs
 * Dev1 - Oscar Cheung
 * Dev2  - Jeffrey Lo
 
-## Responsibilities:
+## PART 1 Responsibilities:
 * Ops   owns the Procfile, REST population script, team management, and Tuffix deployment.
 * Dev1  owns the Tracks and Playlists microservices.
 * Dev2  owns the Users and Descriptions microservices.
+
+## PART 2 Responsabilities:
+* Ops   owns the loadbalancer (Kong), the minIO server, kong configuration shell scripts, and Tuffix deployment.
+* Dev1  owns the three tracks databases and the tracks microservice with sharding
+* Dev2  owns the xspf module and the xspf microservice 
 
 ## Requirements & Dependencies:
 * Python 3.6.7
@@ -36,11 +41,26 @@ Project 1 for CPSC 449 w/ Prof Avery - Microservices with RESTful APIs
 * Database url: ``` api.cfg ```
 * Environment variables: ``` .env ```
 
+* Shell scripts: kong_config_scrits/
 
 # Running: 
 * Initialize DB: ```foreman run initDB```
 * Start micro-services: ```foreman start -m all=1,initDB=0 -e .env```
-* Run Test Script: ```py.test --tb=short``` 
+* Run Test Script: ```py.test --tb=short```
+
+# Running using load balancer:
+* In a new terminal run the following: '''sudo ulimit -n 4096 & kong start'''
+* In a new terminal run the following: '''sudo ./minio server /data'''
+* Run kong configuration files:
+  * '''cd kong_config_scripts'''
+  * '''./all.sh'''
+  * NOTE: configuration can be cleared with: '''./clearAll.sh'''
+* Initialize DB: '''foreman run initDB'''
+* Start micro-services: '''foreman start -m all=3,initDB=0,XSPF=1 -e .env'''
+* Optional Test Script: '''py.test --tb=short''' 
+* Open a web browser and go to '''localhost:8000'''
+  * Address Example: '''localhost:8000/media/Nocturne20.mp3''' or alternatively, replace the 'Nocturne20.mp3' with preffered media file
+  * Address Example: '''localhost:8000/playlists/playlists/all'''
 
 # Microservice APIs:
 ## Tracks

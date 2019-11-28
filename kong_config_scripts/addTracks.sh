@@ -1,27 +1,24 @@
 
 curl -X POST http://localhost:8001/upstreams \
-    --data "name=trackAPI"
+    --data 'name=trackAPI'
 
 curl -X POST http://localhost:8001/upstreams/trackAPI/targets \
-    --data 'name=trackOne' \
-    --data "target=localhost:6100" \
-    --data "weight=100"
+    --data 'target=127.0.0.1:5100' \
+    --data 'weight=6'
 
 curl -X POST http://localhost:8001/upstreams/trackAPI/targets \
-    --data 'name=trackTwo' \
-    --data "target=localhost:6101" \
-    --data "weight=100"
+    --data 'target=127.0.0.1:5101' \
+    --data 'weight=6'
 
 curl -X POST http://localhost:8001/upstreams/trackAPI/targets \
-    --data 'name=trackThree' \
-    --data "target=localhost:6102" \
-    --data "weight=100"
+    --data 'target=127.0.0.1:5102' \
+    --data 'weight=6'
 
 curl -X POST http://localhost:8001/services/ \
-    --data "name=tracks" \
-    --data 'host=trackAPI'
-    #--data "path=/track"
+    --data 'name=tracksSer' \
+    --data 'host=trackAPI' \
+    --data "path=localhost"
 
-curl -X POST http://localhost:8001/services/track/routes/ \
+curl -X POST http://localhost:8001/services/tracksSer/routes/ \
     --data 'name=trackRoute' \
-    --data 'paths[]=/tracksAPI'
+    --data 'paths[]=/tracks'

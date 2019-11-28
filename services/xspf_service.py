@@ -27,7 +27,7 @@ PLAYLIST_EPT = 'playlists'
 TRACKS_EPT = 'tracks'
 USERS_EPT = 'users'
 DESC_EPT = 'desc'
-DEBUG_MODE = True
+DEBUG_MODE = False
 
 
 def debugPrint(data):
@@ -91,7 +91,7 @@ def playlist_request(id):
     payload = {'id': id}
     if not DEBUG_MODE:
         # Actual url
-        url = TARGET_URL + PLAYLIST_EPT
+        url = TARGET_URL + PLAYLIST_EPT +'/' + PLAYLIST_EPT + str(id)
     else:
     # Debug pre-kong url
         url = 'http://localhost:5200/' + PLAYLIST_EPT
