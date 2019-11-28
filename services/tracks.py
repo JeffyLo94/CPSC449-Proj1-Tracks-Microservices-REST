@@ -68,18 +68,20 @@ def all_tracks():
     return list(all_tracks)
 
 #get track by guid
-@app.route('/tracks/<uuid:guid>', methods=['GET'])
+@app.route('/tracks/<string:guid>', methods=['GET'])
 def track_by_guid(guid):
     #get the shardkey of guid and find in respective database
-    shardKey = int(guid) % 3
+    uidStr = guid
+    id = uuid.UUID(uidStr)
+    shardKey = int(id) % 3
     debugPrint(shardKey)
 
     if shardKey == 0:
-        track = queries1.track_by_guid(guid=guid)
+        track = queries1.track_by_guid(guid=uidStr)
     elif shardKey == 1:
-        track = queries2.track_by_guid(guid=guid)
+        track = queries2.track_by_guid(guid=uidStr)
     elif shardKey == 2:
-        track = queries3.track_by_guid(guid=guid)
+        track = queries3.track_by_guid(guid=uidStr)
     else:
         raise exceptions.NotFound()
     return track

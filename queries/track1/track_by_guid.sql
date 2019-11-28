@@ -1,3 +1,3 @@
--- :name track_by_id :one
+-- :name track_by_guid :one
 SELECT * FROM tracks
-WHERE id = :id;
+WHERE guid = :guid;
