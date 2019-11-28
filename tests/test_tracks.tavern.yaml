@@ -68,7 +68,7 @@ stages:
 
   - name: Verify Track Creations
     request:
-      url: "{protocol:s}://{host:s}:{tracks_port:d}/tracks"
+      url: "{protocol:s}://{host:s}:{tracks_port:d}/tracks/all"
       method: GET
       headers:
         content-type: application/json
@@ -132,29 +132,29 @@ stages:
       headers:
         content-type: application/json
     response:
-      status_code: 
+      status_code:
         - 200
         - 409
 
-  - name: Verifying album name change
-    request:
-      url: "{protocol:s}://{host:s}:{tracks_port:d}/tracks?title=Dare%20You%20To%20Move"
-      method: GET
-      headers:
-        content-type: application/json
-    response:
-      status_code: 200
-      headers:
-        content-type: application/json
-      body:
-        success:
-          - title: Album name has changed
-            title: Dare You To Move
-            album: The Best Yet
-            artist: Switchfoot
-            songLength: 247
-            song_url: http://localhost/files/audio/dare-you-to-move.mp3
-            art_url: http://localhost/files/pics/albums/the-beautiful-letdown.png
+  # - name: Verifying album name change
+  #   request:
+  #     url: "{protocol:s}://{host:s}:{tracks_port:d}/tracks?title=Dare%20You%20To%20Move"
+  #     method: GET
+  #     headers:
+  #       content-type: application/json
+  #   response:
+  #     status_code: 200
+  #     headers:
+  #       content-type: application/json
+  #     body:
+  #       success:
+  #           title: Album name has changed
+  #           title: Dare You To Move
+  #           album: The Best Yet
+  #           artist: Switchfoot
+  #           songLength: 247
+  #           song_url: http://localhost/files/audio/dare-you-to-move.mp3
+  #           art_url: http://localhost/files/pics/albums/the-beautiful-letdown.png
 
 ---
 
@@ -164,25 +164,16 @@ includes:
   - !include includes.yaml
 
 stages:
-  - name: Create a track
+  - name: Delete Seven Nation Army Track
     request:
       url: "{protocol:s}://{host:s}:{tracks_port:d}/tracks"
-      method: POST
+      method: DELETE
       json:
         title: Seven Nation Army
         album: Elephant
         artist: The White Stripes
         songLength: 247
         song_url: http://localhost/files/audio/seven-nation-army.mp3
-      headers:
-        content-type: application/json
-    response:
-      status_code: 201
-
-  - name: Delete Seven Nation Army Track
-    request:
-      url: "{protocol:s}://{host:s}:{tracks_port:d}/tracks?title=Seven%20Nation%20Army&song_url=http://localhost/files/audio/seven-nation-army.mp3"
-      method: DELETE
       headers:
         content-type: application/json
     response:

@@ -12,7 +12,7 @@ CREATE TABLE tracks (
     guid BLOB primary key,
     title VARCHAR,
     album VARCHAR,
-    artist VARCHAR,       
+    artist VARCHAR,
     songLength INT,
     song_url VARCHAR,
     art_url VARCHAR,

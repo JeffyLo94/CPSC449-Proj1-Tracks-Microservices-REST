@@ -6,23 +6,25 @@ import sqlite3
 from sqlalchemy import text
 import uuid
 import sys
+import os
 
 
 app = flask_api.FlaskAPI(__name__)
 app.config.from_envvar('APP_CONFIG')
 
+
 sqlite3.register_converter('GUID', lambda b: uuid.UUID(bytes_le=b))
 sqlite3.register_adapter(uuid.UUID, lambda u: u.bytes_le)
 
 queries1 = pugsql.module('queries/track1/')
-queries1.connect(app.config['DATABASE_URL_1'].format(stuff=sqlite3.PARSE_DECLTYPES))
+queries1.connect(app.config['DATABASE_URL_1'])
 
 
 queries2 = pugsql.module('queries/track2/')
-queries2.connect(app.config['DATABASE_URL_2'].format(stuff=sqlite3.PARSE_DECLTYPES))
+queries2.connect(app.config['DATABASE_URL_2'])
 
 queries3 = pugsql.module('queries/track3/')
-queries3.connect(app.config['DATABASE_URL_3'].format(stuff=sqlite3.PARSE_DECLTYPES))
+queries3.connect(app.config['DATABASE_URL_3'])
 
 def debugPrint(data):
     print(data, file=sys.stderr)
@@ -31,7 +33,7 @@ def debugPrint(data):
 def init_db():
     with app.app_context():
         db1 = queries1._engine.raw_connection()
-        #db.create_all()
+        db.create_all()
         with app.open_resource('track1.sql', mode='r') as f1:
             db1.cursor().executescript(f1.read())
         db1.commit()
@@ -69,22 +71,22 @@ def all_tracks():
 
 #get track by guid
 @app.route('/tracks/<uuid:guid>', methods=['GET'])
-def track_by_guid(guid):
+def track_by_id(guid):
     #get the shardkey of guid and find in respective database
     shardKey = int(guid) % 3
     debugPrint(shardKey)
 
     if shardKey == 0:
-        track = queries1.track_by_guid(guid=guid)
+        track = queries1.track_by_id(guid=guid)
     elif shardKey == 1:
-        track = queries2.track_by_guid(guid=guid)
+        track = queries2.track_by_id(guid=guid)
     elif shardKey == 2:
-        track = queries3.track_by_guid(guid=guid)
+        track = queries3.track_by_id(guid=guid)
     else:
         raise exceptions.NotFound()
     return track
 
-@app.route('/tracks', methods=['GET', 'POST', 'PUT'])
+@app.route('/tracks', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def tracks():
     if request.method == 'GET':
         return filter_tracks(request.args)
@@ -92,8 +94,8 @@ def tracks():
         return create_track(request.data)
     elif request.method == 'PUT':
         return edit_track(request.data)
-    # elif request.method == 'DELETE':
-    #     return delete_track(request.data)
+    elif request.method == 'DELETE':
+        return delete_track(request.data)
 
 @app.route('/tracks', methods=['PUT'])
 def edit_track(query_parameters):
@@ -102,7 +104,7 @@ def edit_track(query_parameters):
     artist = query_parameters.get('artist')
     songLength = query_parameters.get('songLength')
     song_url = query_parameters.get('song_url')
-    guid = query_parameters.get('guid')
+    art_url = query_parameters.get('art_url')
 
     query = "SELECT * FROM tracks WHERE"
     to_edit = []
@@ -122,10 +124,10 @@ def edit_track(query_parameters):
     if song_url:
         query += ' song_url=? AND'
         to_edit.append(song_url)
-    if guid:
-        query += ' guid=? AND'
-        to_edit.append(guid)
-    if not (guid or title or album or artist or songLength or song_url):
+    if art_url:
+        query += ' art_url=? AND'
+        to_edit.append(art_url)
+    if not (title or album or artist or songLength or song_url):
         raise exceptions.NotFound()
 
     query = query[:-4] + ';'
@@ -156,16 +158,29 @@ def delete_by_guid(guid):
         return { 'error': str(e) }, status.HTTP_409_CONFLICT
 
 
-# def delete_track(track):
-#     required_fields = ['title', 'album', 'artist', 'song_url']
-#
-#     if not all([field in track for field in required_fields]):
-#         raise exceptions.ParseError()
-#     try:
-#         queries.delete_track(**track)
-#         return { 'message': 'Track successfully deleted'}, status.HTTP_200_OK
-#     except Exception as e:
-#         return { 'error': str(e) }, status.HTTP_409_CONFLICT
+def delete_track(track):
+    track = request.data
+    required_fields = ['title', 'album', 'artist', 'song_url']
+    debugPrint(track)
+    uuidStr = track['guid']
+    uniqueID = uuid.UUID(uuidStr)
+    shardKey = int(uniqueID) % 3
+    if not all([field in track for field in required_fields]):
+        raise exceptions.ParseError()
+    try:
+        if shardKey == 0:
+            debugPrint("ONE")
+            queries1.delete_track(**track)
+        if shardKey == 1:
+            debugPrint("TWO")
+            queries2.delete_track(**track)
+        if shardKey == 2:
+            debugPrint("THREE")
+            queries3.delete_track(**track)
+        return { 'message': 'Track successfully deleted'}, status.HTTP_200_OK
+    except Exception as e:
+        debugPrint(e)
+        return { 'error': str(e) }, status.HTTP_409_CONFLICT
 
 #delete ALL tracks
 @app.route('/tracks/all', methods=['DELETE'])
@@ -173,7 +188,6 @@ def delete_all_tracks():
     queries1.delete_all_tracks()
     queries2.delete_all_tracks()
     queries3.delete_all_tracks()
-
 
 
 def create_track(track):
@@ -184,9 +198,8 @@ def create_track(track):
     if not all([field in track for field in required_fields]):
         debugPrint('ERROR')
         raise exceptions.ParseError()
-    if not track['art_url']:
+    if 'art_url' not in track:
         track['art_url'] = ""
-        #track.update({'guid': ""})
     try:
         uniqueid = uuid.uuid4()
         shardKey = int(uniqueid) % 3
@@ -253,7 +266,7 @@ def filter_tracks(query_parameters):
     artist = query_parameters.get('artist')
     songLength = query_parameters.get('songLength')
     song_url = query_parameters.get('song_url')
-    guid = query_parameters.get('guid')
+    art_url = query_parameters.get('art_url')
 
     query = "SELECT * FROM tracks WHERE"
     to_filter = []
@@ -276,9 +289,9 @@ def filter_tracks(query_parameters):
     if song_url:
         query += ' song_url=? AND'
         to_filter.append(song_url)
-    if guid:
-        query += ' guid=? AND'
-        to_filter.append(guid)
+    if art_url:
+        query += ' art_url=? AND'
+        to_filter.append(art_url)
     if not (guid or title or album or artist or songLength or song_url):
         raise exceptions.NotFound()
 
