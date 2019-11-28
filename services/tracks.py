@@ -3,6 +3,7 @@ from flask import request
 from flask_api import status, exceptions
 import pugsql
 import sqlite3
+from sqlalchemy import text
 import uuid
 import sys
 
@@ -11,10 +12,11 @@ app = flask_api.FlaskAPI(__name__)
 app.config.from_envvar('APP_CONFIG')
 
 sqlite3.register_converter('GUID', lambda b: uuid.UUID(bytes_le=b))
-sqlite3.register_adapter(uuid.UUID, lambda u: buffer(u.bytes_le))
+sqlite3.register_adapter(uuid.UUID, lambda u: u.bytes_le)
 
 queries1 = pugsql.module('queries/track1/')
 queries1.connect(app.config['DATABASE_URL_1'].format(stuff=sqlite3.PARSE_DECLTYPES))
+
 
 queries2 = pugsql.module('queries/track2/')
 queries2.connect(app.config['DATABASE_URL_2'].format(stuff=sqlite3.PARSE_DECLTYPES))
@@ -33,7 +35,7 @@ def init_db():
         with app.open_resource('track1.sql', mode='r') as f1:
             db1.cursor().executescript(f1.read())
         db1.commit()
-
+        #
         db2 = queries2._engine.raw_connection()
         with app.open_resource('track2.sql', mode='r') as f2:
             db2.cursor().executescript(f2.read())
@@ -53,14 +55,15 @@ def home():
 #return ALL tracks
 @app.route('/tracks/all', methods=['GET'])
 def all_tracks():
-    # query = "SELECT * FROM tracks"
-    # all_tracks1 = queries1._engine.execute(query).fetchone()
-    # all_tracks2 = queries2._engine.execute(query).fetchone()
-    # all_tracks3 = queries3._engine.execute(query).fetchone()
-    all_tracks1 = queries1.all_tracks()
-    all_tracks2 = queries2.all_tracks()
-    all_tracks3 = queries3.all_tracks()
+    query = "SELECT * FROM tracks"
+    all_tracks1 = queries1._engine.execute(query).fetchone()
+    all_tracks2 = queries2._engine.execute(query).fetchone()
+    all_tracks3 = queries3._engine.execute(query).fetchone()
+    # all_tracks1 = queries1.all_tracks()
+    # all_tracks2 = queries2.all_tracks()
+    # all_tracks3 = queries3.all_tracks()
     all_tracks = list(all_tracks1) + list(all_tracks2) + list(all_tracks3)
+    # all_tracks = list(all_tracks1)
 
     return list(all_tracks)
 
@@ -132,7 +135,7 @@ def edit_track(query_parameters):
     edit3 = queries3._engine.execute(query, to_edit).fetchall()
 
     return list(map(dict, edit1)) + list(map(dict, edit2)) + list(map(dict, edit3))
-
+    # return list(map(dict, edit1))
 
 #delete track by guid
 @app.route('/tracks/<uuid:guid>', methods=['DELETE'])
@@ -177,37 +180,63 @@ def create_track(track):
     track = request.data
     required_fields = ['title', 'album', 'artist', 'songLength', 'song_url']
 
-
     debugPrint(track)
     if not all([field in track for field in required_fields]):
+        debugPrint('ERROR')
         raise exceptions.ParseError()
-    if 'art_url' not in track:
+    if not track['art_url']:
         track['art_url'] = ""
         #track.update({'guid': ""})
     try:
         uniqueid = uuid.uuid4()
         shardKey = int(uniqueid) % 3
 
+        params = [track['title'], track['album'], track['artist'], track['songLength'], track['song_url'], track['art_url'], str(uniqueid)]
 
+        debugPrint('TYPE CHECK')
+        debugPrint(type(track['album']))
+        debugPrint('trying shard query')
         if shardKey == 0:
             debugPrint("ZERO")
-            track['guid'] = uniqueid
-            debugPrint(track)
+            test = str(uniqueid)
+            track['guid'] = test
+            debugPrint(type(track['guid']))
+            debugPrint(params)
+            #
+            query = '''INSERT INTO tracks (title, album, artist, songLength, song_url, art_url, guid) VALUES (?, ?, ?, ?, ?, ?, ?)'''
+            queries1._engine.execute(query, params)
 
-            queries1.create_track(**track)
+            # queries1.create_track(**track)
             debugPrint("HELLO")
         elif shardKey == 1:
             debugPrint("UNO")
-            track['guid'] = uniqueid
-            debugPrint(track)
-            queries2.create_track(**track)
-            debugPrint("HELLO")
+            test = str(uniqueid)
+            track['guid'] = test
+            debugPrint(type(track['guid']))
+
+            debugPrint(params)
+
+            query = '''INSERT INTO tracks (title, album, artist, songLength, song_url, art_url, guid) VALUES (?, ?, ?, ?, ?, ?, ?)'''
+            queries2._engine.execute(query, params)
+        #     track['guid'] = uniqueid
+        #     debugPrint(track)
+        #     queries2.create_track(**track)
+        #     debugPrint("HELLO")
         elif shardKey == 2:
             debugPrint("DOS")
-            track['guid'] = uniqueid
-            debugPrint(track)
-            queries3.create_track(**track)
-            debugPrint("HELLO")
+            test = str(uniqueid)
+            track['guid'] = test
+            debugPrint(type(track['guid']))
+
+            debugPrint(params)
+
+            query = '''INSERT INTO tracks (title, album, artist, songLength, song_url, art_url, guid) VALUES (?, ?, ?, ?, ?, ?, ?)'''
+            queries3._engine.execute(query, params)
+
+        #     track['guid'] = uniqueid
+        #     debugPrint(track)
+        #     queries3.create_track(**track)
+        #     debugPrint("HELLO")
         else:
             raise exceptions.ParseError()
     except Exception as e:
@@ -258,5 +287,7 @@ def filter_tracks(query_parameters):
     results1 = queries1._engine.execute(query, to_filter).fetchall()
     results2 = queries2._engine.execute(query, to_filter).fetchall()
     results3 = queries3._engine.execute(query, to_filter).fetchall()
-
+    #
     return list(map(dict, results1)) + list(map(dict, results2)) + list(map(dict, results3))
+
+    # return list(map(dict, results1))
