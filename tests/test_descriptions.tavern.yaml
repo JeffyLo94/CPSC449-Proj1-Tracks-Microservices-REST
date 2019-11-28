@@ -9,7 +9,7 @@ stages:
       url: "{protocol:s}://{host:s}:{descriptions_port:d}/desc"
       method: POST
       json:
-        user: jeffylo94
+        username: jeffylo94
         trackurl: "{protocol:s}://{host:s}:{tracks_port:d}/tracks?title=Can't Help Falling in Love&artist=Elvis Presley"
         description: this song is great
       headers:
@@ -27,7 +27,7 @@ includes:
 stages:
   - name: retrive descriptions by jeffylo94
     request:
-      url: "{protocol:s}://{host:s}:{descriptions_port:d}/desc?user=jeffylo94"
+      url: "{protocol:s}://{host:s}:{descriptions_port:d}/desc?username=jeffylo94"
       method: GET
       headers:
         content-type: application/json

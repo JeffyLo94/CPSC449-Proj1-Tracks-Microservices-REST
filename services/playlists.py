@@ -110,7 +110,7 @@ def delete_playlist_by_id(id):
 #         else:
 #             raise exceptions.NotFound()
 
-@app.route('/playlists', methods=['DELETE'])
+@app.route('/playlists/all', methods=['DELETE'])
 def delete_all_playlist():
     try:
         queries.delete_all_playlist_urls()
@@ -130,16 +130,49 @@ def delete_all_playlist():
                 return {'error': str(e)}, status.HTTP_409_CONFLICT
 
 
-@app.route('/playlists', methods=['DELETE'])
-def delete_playlist(playlist):
-    required_fields = ['title', 'creator']
+def delete_playlist(query_parameters):
+    id = query_parameters.get('id')
+    title = query_parameters.get('title')
+    urls = query_parameters.get('urls')
+    creator = query_parameters.get('creator')
+    description = query_parameters.get('description')
 
-    if not all([field in playlist for field in required_fields]):
-        raise exceptions.ParseError()
+    debugPrint("DELETE PLAYLIST")
+
+    query = "DELETE FROM playlists WHERE"
+    to_filter = {}
+
+    if id:
+        query += ' id=:id AND'
+        to_filter.update({'id': id})
+    if title:
+        query += ' title=:title AND'
+        to_filter.update({'title': title})
+    if urls:
+        query += ' urls=:urls AND'
+        to_filter.update({'urls': urls})
+    if creator:
+        query += ' creator=:creator AND'
+        to_filter.update({'creator':creator})
+    if description:
+        query += ' description=:desc AND'
+        to_filter.update({'desc':description})
+
+    if not (id or title or urls or creator or description):
+        debugPrint('not found triggered')
+        raise exceptions.NotFound()
+
+    query = query[:-4] + ';'
+    debugPrint(query)
     try:
-        delete_playlist(**playlist)
+        results = queries._engine.execute(query, to_filter)
+        debugPrint('DELETE Playlist success')
+        # debugPrint(results)
+        return {'message': 'Delete Playlist Success'}, status.HTTP_200_OK
     except Exception as e:
+        debugPrint(e)
         return { 'error': str(e) }, status.HTTP_409_CONFLICT
+
 
 @app.route('/playlists', methods=['GET', 'POST', 'DELETE'])
 def playlists():
@@ -148,12 +181,12 @@ def playlists():
     elif request.method == 'POST':
         return create_playlist(request.data)
     elif request.method == 'DELETE':
-        return delete_playlist(request.data)
+        return delete_playlist(request.args)
 
-@app.route('/playlists', methods=['POST'])
 def create_playlist(playlist):
     required_fields = ['title', 'urls', 'creator', 'description']
 
+    debugPrint(playlist)
     if not all([field in playlist for field in required_fields]):
         raise exceptions.ParseError()
     try:
@@ -172,7 +205,7 @@ def create_playlist(playlist):
             queries.create_playlists_url_list(data)
     except Exception as e:
         return { 'error': str(e) }, status.HTTP_409_CONFLICT
-        
+
     return playlist, status.HTTP_201_CREATED
 
 def filter_playlists(query_parameters):
