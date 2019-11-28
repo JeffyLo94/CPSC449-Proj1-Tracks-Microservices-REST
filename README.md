@@ -42,6 +42,18 @@ Project 1 for CPSC 449 w/ Prof Avery - Microservices with RESTful APIs
 * Start micro-services: ```foreman start -m all=1,initDB=0 -e .env```
 * Run Test Script: ```py.test --tb=short``` 
 
+# Change Log:
+## Milestone 1 - "Project 1"
+* Tracks, Playlists, Users, Descriptions Microservices Established with PugSQL and Flask-API
+* Test scripts for api - failing most tests
+## Milestone 2 - "Project 2"
+* Tracks DB sharding support w/ GUIDs
+* Fixed Microservice APIS
+* Test Scripts for APIs - passing all
+* Added XSPF playlist microservice
+* Kong API gateway added
+* Min.io static files added for tracks
+
 # Microservice APIs:
 ## Tracks
 | Method | Route         | Description                                                                                       |
