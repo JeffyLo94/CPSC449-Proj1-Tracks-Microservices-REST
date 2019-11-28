@@ -98,7 +98,7 @@ def filter_desc(query_parameters):
     trackurl = query_parameters.get('trackurl')
     description = query_parameters.get('description')
 
-    query = "SELECT user, trackurl, description FROM descriptions WHERE"
+    query = "SELECT * FROM descriptions WHERE"
     to_filter = []
 
     if id:
@@ -117,8 +117,14 @@ def filter_desc(query_parameters):
         raise exceptions.NotFound()
 
     query = query[:-4] + ';'
-
-    results = queries._engine.execute(query,to_filter).fetchall()
+    debugPrint(query)
+    debugPrint(to_filter)
+    try:
+        results = queries._engine.execute(query,to_filter).fetchall()
+        debugPrint(map(dict,results))
+    except Exception as e:
+        debugPrint(e)
+        return {'error': str(e)}, status.HTTP_409_CONFLICT
     return list(map(dict,results))
 
 if __name__ == "__main__":
