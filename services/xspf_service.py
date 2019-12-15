@@ -30,11 +30,12 @@ PLAYLIST_EPT = 'playlists'
 TRACKS_EPT = 'tracks'
 USERS_EPT = 'users'
 DESC_EPT = 'desc'
-MEMCACHE_EXPIRE_SECONDS = 60
-DEBUG_MODE = True
+DEBUG_MODE = False
+
 old_cache = base.Client(('localhost', 11211), ignore_exc=True)
 new_cache = base.Client(('localhost', 11212))
 client = fallback.FallbackClient((new_cache, old_cache))
+MEMCACHE_EXPIRE_SECONDS = 60
 
 
 
@@ -115,7 +116,7 @@ def playlist_request(id):
 
         if not DEBUG_MODE:
             # Actual url
-            url = TARGET_URL + PLAYLIST_EPT
+            url = TARGET_URL + PLAYLIST_EPT +'/' + PLAYLIST_EPT + str(id)
         else:
             # Debug pre-kong url
             url = 'http://localhost:5200/' + PLAYLIST_EPT
@@ -126,6 +127,7 @@ def playlist_request(id):
         result = r.json()
         client.set(cache_key, result, expire=MEMCACHE_EXPIRE_SECONDS)
     return result
+
 
 def tracks_request(song_url):
     cache_key = 'tracks_' + str(song_url)

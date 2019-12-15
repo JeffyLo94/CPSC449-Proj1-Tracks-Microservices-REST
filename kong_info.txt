@@ -1,0 +1,13 @@
+Stuff about kong:
+
+NOTE: to properly run the shell commands for configuring / or de-configuring Kong please install the jq command
+using the following: 'sudo apt install jq'
+
+The service for kong and its path were configured as: 'http://localhost:8000/media/media_file.mp3'
+
+EX: 'http://localhost:8000/media/Nocturne20.mp3'
+
+New foreman command:
+foreman start -m all=3,initDB=0,XSPF=1 -e .env
+
+

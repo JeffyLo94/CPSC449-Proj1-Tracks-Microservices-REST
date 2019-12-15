@@ -17,14 +17,13 @@ sqlite3.register_converter('GUID', lambda b: uuid.UUID(bytes_le=b))
 sqlite3.register_adapter(uuid.UUID, lambda u: u.bytes_le)
 
 queries1 = pugsql.module('queries/track1/')
-queries1.connect(app.config['DATABASE_URL_1'])
-
+queries1.connect(app.config['DATABASE_URL_1'].format(stuff=sqlite3.PARSE_DECLTYPES))
 
 queries2 = pugsql.module('queries/track2/')
-queries2.connect(app.config['DATABASE_URL_2'])
+queries2.connect(app.config['DATABASE_URL_2'].format(stuff=sqlite3.PARSE_DECLTYPES))
 
 queries3 = pugsql.module('queries/track3/')
-queries3.connect(app.config['DATABASE_URL_3'])
+queries3.connect(app.config['DATABASE_URL_3'].format(stuff=sqlite3.PARSE_DECLTYPES))
 
 def debugPrint(data):
     print(data, file=sys.stderr)
