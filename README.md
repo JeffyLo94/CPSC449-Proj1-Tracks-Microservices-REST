@@ -26,6 +26,7 @@ Project 1 for CPSC 449 w/ Prof Avery - Microservices with RESTful APIs
 * KONG
 * MinIO
 * requests
+* memcached && pymemcached
 
 
 ## Tested on:
