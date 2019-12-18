@@ -31,6 +31,7 @@ TRACKS_EPT = 'tracks'
 USERS_EPT = 'users'
 DESC_EPT = 'desc'
 DEBUG_MODE = False
+CACHE_XML = False
 
 old_cache = base.Client(('localhost', 11211), ignore_exc=True)
 new_cache = base.Client(('localhost', 11212))
@@ -53,7 +54,10 @@ def generate_xspf_by_id(id):
     debugPrint(id)
 
     # Don't forget to run `memcached' before running this code
-    result = client.get(id)
+    if CACHE_XML:
+        result = client.get(id)
+    else:
+        result = None
 
     if result is None:
         # The cache is empty, need to get the value
@@ -97,8 +101,9 @@ def generate_xspf_by_id(id):
             return {'error': str(e)}, status.HTTP_409_CONFLICT
 
         result = x.toXml()
-        # Cache the result for next time:
-        client.set(id, result, expire=MEMCACHE_EXPIRE_SECONDS)
+        if CACHE_XML:
+            # Cache the result for next time:
+            client.set(id, result, expire=MEMCACHE_EXPIRE_SECONDS)
 
     # Whether we needed to update the cache or not,
     # at this point you can work with the data
