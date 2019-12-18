@@ -31,6 +31,7 @@ Project 1 for CPSC 449 w/ Prof Avery - Microservices with RESTful APIs
 * KONG
 * MinIO
 * requests
+* memcached && pymemcached
 
 
 ## Tested on:
@@ -61,6 +62,18 @@ Project 1 for CPSC 449 w/ Prof Avery - Microservices with RESTful APIs
 * Open a web browser and go to '''localhost:8000'''
   * Address Example: '''localhost:8000/media/Nocturne20.mp3''' or alternatively, replace the 'Nocturne20.mp3' with preffered media file
   * Address Example: '''localhost:8000/playlists/playlists/all'''
+
+# Change Log:
+## Milestone 1 - "Project 1"
+* Tracks, Playlists, Users, Descriptions Microservices Established with PugSQL and Flask-API
+* Test scripts for api - failing most tests
+## Milestone 2 - "Project 2"
+* Tracks DB sharding support w/ GUIDs
+* Fixed Microservice APIS
+* Test Scripts for APIs - passing all
+* Added XSPF playlist microservice
+* Kong API gateway added
+* Min.io static files added for tracks
 
 # Microservice APIs:
 ## Tracks
